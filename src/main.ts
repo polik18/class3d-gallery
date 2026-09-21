@@ -99,6 +99,8 @@ app.innerHTML = `
     </section>
   </main>
 
+  <a class="portfolio-home-link" href="https://polik18.github.io/" aria-label="回到 Polik 專案總覽">← 回專案總覽</a>
+
   <footer><span>Class3D Gallery v1.2</span><span>Architecture Preview · Local Data</span></footer>
 `;
 
