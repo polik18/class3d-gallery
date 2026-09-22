@@ -1,37 +1,47 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 41,
+  "revision": 43,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P11",
   "current_task": "P11-T01",
-  "status": "PENDING",
+  "status": "IN_PROGRESS",
   "progress_percent": 97,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T09:33:04.582Z",
-  "base_commit": "ec9745944688b8a56c251ee99839cd3ca87d140d",
-  "delivery_commit": "75b11f8e583e5fb0ac44682dd61c2136769a2484",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T09:33:27.550Z",
+  "updated_at": "2026-09-22T09:44:35.914Z",
+  "base_commit": "2afe2bc76933729f6f929d011b3860e4c768a8e9",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T09:33:27.550Z",
+    "heartbeat_at": "2026-09-22T09:44:35.914Z",
+    "expires_at": "2026-09-22T10:14:35.914Z"
+  },
+  "expected_files": [
+    "README.md",
+    "project/evidence/P11-T01/",
+    ".github/workflows/static.yml",
+    "src/main.ts"
+  ],
   "last_verified": {
-    "commit": "cba13587fbe6568ca7a9ff59eadd55d4f6e42b5b",
+    "commit": "2afe2bc76933729f6f929d011b3860e4c768a8e9",
     "commands": [
       "npm test",
       "npm run check",
       "npm run build",
       "npm run project:validate",
       "git diff --check",
-      "node project/evidence/P10-T01/smoke.mjs"
+      "node project/evidence/P11-T01/browser-smoke.mjs"
     ],
-    "result": "PASS",
+    "result": "PARTIAL_PASS",
     "evidence": [
-      "project/evidence/P10-T01/verification.json",
-      "project/evidence/P10-T01/large-gallery.png"
+      "project/evidence/P11-T01/local-mixed-media.png",
+      "project/evidence/P11-T01/class3d-gallery.c3dg"
     ]
   },
-  "next_step": "執行 npm run task:start -- P11-T01",
+  "next_step": "提交 P11 發布候選版，合併 main 並監看 GitHub Pages workflow",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -45,6 +55,6 @@
     "P08-T01": "ACCEPTED",
     "P09-T01": "ACCEPTED",
     "P10-T01": "ACCEPTED",
-    "P11-T01": "PENDING"
+    "P11-T01": "IN_PROGRESS"
   }
 }

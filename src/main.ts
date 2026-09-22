@@ -15,9 +15,11 @@ import { GalleryController } from './gallery/galleryController';
 import { popularityScore } from './gallery/sort';
 import { generateArtworkURL } from './qrcode/share';
 import { mountMediaViewer, type ImportedMediaAsset } from './renderers/mediaViewer';
-import type { RenderableAsset } from './renderers/types';
+import type { RenderableAsset, RenderableKind } from './renderers/types';
 import { IdleShowcaseController } from './showcase/idleController';
 import { mountShowcaseView } from './showcase/view';
+import { exportGalleryArchive, importGalleryArchive } from './storage/export';
+import { GalleryStorage, requestPersistentStorage, type StoredAsset } from './storage/indexedDb';
 import { createProfile } from './student/profile';
 
 const records: CloudRecord[] = [
@@ -144,6 +146,15 @@ app.innerHTML = `
         </label>
         <p id="gallery-count" aria-live="polite"></p>
       </div>
+      <div class="library-toolbar" aria-label="本機作品庫">
+        <div><strong>本機作品庫</strong><span>只儲存在這台電腦的瀏覽器</span></div>
+        <button id="save-local-gallery" type="button">保存目前作品</button>
+        <button id="load-local-gallery" type="button">載入已保存作品</button>
+        <button id="export-local-gallery" type="button">匯出展覽檔</button>
+        <label class="library-import-button" for="import-local-gallery">匯入展覽檔<input id="import-local-gallery" type="file" accept=".c3dg,application/x-class3d-gallery" /></label>
+        <button class="library-clear-button" id="clear-local-gallery" type="button">清除已保存作品</button>
+        <p id="library-status" aria-live="polite"></p>
+      </div>
       <div class="work-grid" id="work-grid"></div>
       <p class="gallery-empty" id="gallery-empty" hidden></p>
       <p class="share-state" id="share-state" aria-live="polite"></p>
@@ -198,9 +209,16 @@ const openSettingsButton = document.querySelector<HTMLButtonElement>('#open-sett
 const startShowcaseButton = document.querySelector<HTMLButtonElement>('#start-showcase');
 const engagementDialog = document.querySelector<HTMLDialogElement>('#engagement-dialog');
 const showcaseOverlay = document.querySelector<HTMLElement>('#showcase-overlay');
+const saveLocalGalleryButton = document.querySelector<HTMLButtonElement>('#save-local-gallery');
+const loadLocalGalleryButton = document.querySelector<HTMLButtonElement>('#load-local-gallery');
+const exportLocalGalleryButton = document.querySelector<HTMLButtonElement>('#export-local-gallery');
+const importLocalGalleryInput = document.querySelector<HTMLInputElement>('#import-local-gallery');
+const clearLocalGalleryButton = document.querySelector<HTMLButtonElement>('#clear-local-gallery');
+const libraryStatus = document.querySelector<HTMLElement>('#library-status');
 const gallery = new GalleryController(demoAssets);
 const engagement = new EngagementController();
 const exhibitionSettingsStore = new ExhibitionSettingsStore();
+const galleryStorage = new GalleryStorage();
 const renderables = new Map<string, RenderableAsset>();
 let importedOnce = false;
 let mediaViewer: ReturnType<typeof mountMediaViewer> | null = null;
@@ -367,9 +385,9 @@ function syncEngagement(assetId?: string) {
   )));
 }
 
-function acceptImported(imported: ImportedMediaAsset[]) {
-  const current = importedOnce ? gallery.getAssets() : [];
-  if (!importedOnce) renderables.clear();
+function acceptImported(imported: ImportedMediaAsset[], replaceCurrent = !importedOnce) {
+  const current = replaceCurrent ? [] : gallery.getAssets();
+  if (replaceCurrent) renderables.clear();
   const offset = current.length;
   imported.forEach(({ record, renderable }, index) => {
     record.importOrder = offset + index;
@@ -381,9 +399,110 @@ function acceptImported(imported: ImportedMediaAsset[]) {
   gallery.setMode('all');
 }
 
+function storedToImported(asset: StoredAsset): ImportedMediaAsset | null {
+  if (asset.record.kind === 'unsupported') return null;
+  return {
+    record: { ...asset.record, savedLocally: true },
+    renderable: {
+      kind: asset.record.kind as RenderableKind,
+      title: asset.record.title,
+      files: asset.files.map(({ descriptor, blob }) => ({
+        blob,
+        name: descriptor.name,
+        relativePath: descriptor.relativePath,
+        mimeType: descriptor.mimeType
+      }))
+    }
+  };
+}
+
+async function loadSavedGallery(showEmptyMessage = true) {
+  if (libraryStatus) libraryStatus.textContent = '正在讀取本機作品庫…';
+  try {
+    const stored = await galleryStorage.listAssets();
+    const imported = stored.map(storedToImported).filter((asset): asset is ImportedMediaAsset => asset !== null);
+    if (imported.length > 0) {
+      acceptImported(imported, true);
+      if (libraryStatus) libraryStatus.textContent = `已從這台電腦載入 ${imported.length} 件作品。`;
+    } else if (libraryStatus) {
+      libraryStatus.textContent = showEmptyMessage ? '這台電腦還沒有已保存的作品。' : '';
+    }
+    return imported.length;
+  } catch (error) {
+    if (libraryStatus) libraryStatus.textContent = error instanceof Error ? error.message : '無法讀取本機作品庫';
+    return 0;
+  }
+}
+
+async function saveCurrentGallery() {
+  const candidates = gallery.getAssets().flatMap((record) => {
+    const renderable = renderables.get(record.id);
+    if (!renderable) return [];
+    const files = renderable.files.flatMap((file, index) => {
+      const descriptor = record.sourceFiles.find((item) => item.relativePath === file.relativePath) ?? record.sourceFiles[index];
+      return descriptor ? [{ descriptor, blob: file.blob }] : [];
+    });
+    return files.length === renderable.files.length ? [{ record, files }] : [];
+  });
+  if (candidates.length === 0) {
+    if (libraryStatus) libraryStatus.textContent = '目前沒有可保存的匯入作品。';
+    return;
+  }
+  if (libraryStatus) libraryStatus.textContent = `正在保存 ${candidates.length} 件作品…`;
+  try {
+    await requestPersistentStorage();
+    for (const candidate of candidates) await galleryStorage.saveAsset(candidate.record, candidate.files);
+    const saved = new Set(candidates.map((candidate) => candidate.record.id));
+    gallery.setAssets(gallery.getAssets().map((asset) => saved.has(asset.id) ? { ...asset, savedLocally: true } : asset));
+    if (libraryStatus) libraryStatus.textContent = `已將 ${candidates.length} 件作品保存在這台電腦。`;
+  } catch (error) {
+    if (libraryStatus) libraryStatus.textContent = error instanceof Error ? error.message : '作品保存失敗';
+  }
+}
+
+function downloadBlob(fileName: string, blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
 if (mediaStage && mediaInput && mediaStatus && mediaDropZone) {
   mediaViewer = mountMediaViewer({ container: mediaStage, shell: mediaDropZone, input: mediaInput, status: mediaStatus, onImport: acceptImported });
 }
+
+saveLocalGalleryButton?.addEventListener('click', () => { void saveCurrentGallery(); });
+loadLocalGalleryButton?.addEventListener('click', () => { void loadSavedGallery(); });
+exportLocalGalleryButton?.addEventListener('click', () => {
+  void galleryStorage.listAssets().then((assets) => {
+    if (assets.length === 0) {
+      if (libraryStatus) libraryStatus.textContent = '沒有已保存的作品可匯出。';
+      return;
+    }
+    downloadBlob('class3d-gallery.c3dg', exportGalleryArchive(assets));
+    if (libraryStatus) libraryStatus.textContent = `已匯出 ${assets.length} 件作品的本機展覽檔。`;
+  }).catch((error: unknown) => { if (libraryStatus) libraryStatus.textContent = error instanceof Error ? error.message : '匯出失敗'; });
+});
+importLocalGalleryInput?.addEventListener('change', () => {
+  const archive = importLocalGalleryInput.files?.[0];
+  importLocalGalleryInput.value = '';
+  if (!archive) return;
+  if (libraryStatus) libraryStatus.textContent = '正在匯入展覽檔…';
+  void importGalleryArchive(galleryStorage, archive)
+    .then(({ importedCount }) => loadSavedGallery(false).then(() => {
+      if (libraryStatus) libraryStatus.textContent = `已匯入並載入 ${importedCount} 件作品。`;
+    }))
+    .catch((error: unknown) => { if (libraryStatus) libraryStatus.textContent = error instanceof Error ? error.message : '匯入失敗'; });
+});
+clearLocalGalleryButton?.addEventListener('click', () => {
+  if (!window.confirm('確定清除這台電腦上已保存的作品？目前畫面可繼續展示到關閉頁籤。')) return;
+  void galleryStorage.clearAll().then(() => {
+    gallery.setAssets(gallery.getAssets().map((asset) => ({ ...asset, savedLocally: false })));
+    if (libraryStatus) libraryStatus.textContent = '已清除本機作品庫；未上傳任何資料。';
+  }).catch((error: unknown) => { if (libraryStatus) libraryStatus.textContent = error instanceof Error ? error.message : '清除失敗'; });
+});
 
 document.querySelectorAll<HTMLButtonElement>('[data-gallery-mode]').forEach((button) => {
   button.addEventListener('click', () => gallery.setMode(button.dataset.galleryMode as ExhibitionMode));
@@ -459,3 +578,4 @@ if (engagementDialog) {
 }
 
 syncEngagement();
+void loadSavedGallery(false);

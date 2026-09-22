@@ -40,3 +40,5 @@
 {"schema":"class3d-project-event-v1","revision":39,"event":"TASK_CHECKPOINTED","task":"P10-T01","status":"IN_PROGRESS","at":"2026-09-22T09:31:47.712Z","detail":"執行 P10 全套回歸、保存 200 件作品與安全驗證 evidence 後驗收"}
 {"schema":"class3d-project-event-v1","revision":40,"event":"TASK_CHECKPOINTED","task":"P10-T01","status":"VERIFYING","at":"2026-09-22T09:32:46.443Z","detail":"提交 P10 效能、無障礙與安全 evidence，推送後執行 task:finish 驗收"}
 {"schema":"class3d-project-event-v1","revision":41,"event":"TASK_ACCEPTED","task":"P11-T01","status":"PENDING","at":"2026-09-22T09:33:04.582Z","detail":"P10-T01 accepted at 75b11f8e583e5fb0ac44682dd61c2136769a2484"}
+{"schema":"class3d-project-event-v1","revision":42,"event":"TASK_STARTED","task":"P11-T01","status":"IN_PROGRESS","at":"2026-09-22T09:33:27.550Z","detail":"P11-T01 started by huangjianzhe"}
+{"schema":"class3d-project-event-v1","revision":43,"event":"TASK_CHECKPOINTED","task":"P11-T01","status":"IN_PROGRESS","at":"2026-09-22T09:44:35.914Z","detail":"提交 P11 發布候選版，合併 main 並監看 GitHub Pages workflow"}
