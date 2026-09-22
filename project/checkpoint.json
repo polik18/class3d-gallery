@@ -1,29 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 16,
+  "revision": 17,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P04",
-  "current_task": "P04-T01",
-  "status": "VERIFYING",
-  "progress_percent": 34,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T04:18:04.185Z",
-  "updated_at": "2026-09-22T04:31:56.853Z",
+  "current_phase": "P05",
+  "current_task": "P05-T01",
+  "status": "PENDING",
+  "progress_percent": 44,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T04:32:49.633Z",
   "base_commit": "37a3525e101b4a30e88509950d2608e2a81be7fc",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T04:18:04.185Z",
-    "heartbeat_at": "2026-09-22T04:31:56.853Z",
-    "expires_at": "2026-09-22T05:01:56.853Z"
-  },
-  "expected_files": [
-    "src/storage/indexedDb.ts",
-    "src/storage/export.ts",
-    "tests/storage.test.ts"
-  ],
+  "delivery_commit": "9c58e7c20c7ae18feed1de36531f2b5570d0b4b5",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "3b66c395b8c51ffd361f627a458c3d421a0ffd3b",
     "commands": [
@@ -39,14 +30,14 @@
       "project/evidence/P04-T01/verification.json"
     ]
   },
-  "next_step": "提交 P04 功能與驗證證據，推送後以 delivery commit 驗收",
+  "next_step": "執行 npm run task:start -- P05-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
     "P01-T01": "ACCEPTED",
     "P02-T01": "ACCEPTED",
     "P03-T01": "ACCEPTED",
-    "P04-T01": "VERIFYING",
+    "P04-T01": "ACCEPTED",
     "P05-T01": "PENDING",
     "P06-T01": "PENDING",
     "P07-T01": "PENDING",
