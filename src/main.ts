@@ -191,10 +191,8 @@ const gallery = new GalleryController(demoAssets);
 const renderables = new Map<string, RenderableAsset>();
 let importedOnce = false;
 let mediaViewer: ReturnType<typeof mountMediaViewer> | null = null;
-let currentExhibitionSettings: ExhibitionSettings | null = null;
 
 function applyExhibitionSettings(settings: ExhibitionSettings) {
-  currentExhibitionSettings = settings;
   const defaultDescription = '從電腦選擇圖片、影片、音訊、PDF 或 3D 作品，直接在瀏覽器裡展示。3D 可旋轉、縮放、平移與播放模型動畫，檔案不會上傳到任何伺服器。';
   if (heroTitle) heroTitle.textContent = settings.title;
   if (topbarExhibitionTitle) topbarExhibitionTitle.textContent = settings.title;

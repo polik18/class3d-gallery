@@ -1,0 +1,46 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P07-T01",
+  "verified_at": "2026-09-22T16:19:19+08:00",
+  "base_commit": "f854732c01ee319b34ffbbcefa8733c4f19b58a0",
+  "result": "PASS",
+  "commands": [
+    { "command": "npm test", "exit_code": 0, "summary": "56 tests passed, including 6 exhibition settings persistence and migration tests" },
+    { "command": "npm run check", "exit_code": 0, "summary": "TypeScript strict check passed" },
+    { "command": "npm run build", "exit_code": 0, "summary": "Vite production build passed; 3D bundle remains isolated and loads on demand" },
+    { "command": "npm run project:validate", "exit_code": 0, "summary": "Project checkpoint and manifest remain consistent" },
+    { "command": "git diff --check", "exit_code": 0, "summary": "No whitespace errors" },
+    { "command": "Chrome headless exhibition settings smoke test", "exit_code": 0, "summary": "Previewed, reverted, saved and reloaded title, subtitle, description, class, curator and display settings" },
+    { "command": "Chrome headless 390px dialog smoke test", "exit_code": 0, "summary": "Settings dialog fit within the mobile viewport with no document overflow" }
+  ],
+  "browser_smoke": {
+    "browser": "Google Chrome headless",
+    "saved_title": "三年一班・宇宙創作展",
+    "unsaved_change_reverted": true,
+    "survived_reload": true,
+    "all_mode_title": true,
+    "category_mode_title": true,
+    "selection_mode_title": true,
+    "solo_mode_title": true,
+    "subtitle_applied": true,
+    "class_and_curator_applied": true,
+    "artwork_count_hidden": true,
+    "categories_hidden": true,
+    "mobile_dialog_width": 352,
+    "mobile_viewport_width": 390,
+    "page_errors": [],
+    "http_errors": [],
+    "screenshot": "project/evidence/P07-T01/exhibition-settings.png"
+  },
+  "acceptance": {
+    "title_editable_and_saved": true,
+    "subtitle_editable_and_saved": true,
+    "description_editable_and_saved": true,
+    "class_and_curator_editable_and_saved": true,
+    "display_options_saved": true,
+    "title_visible_in_every_gallery_mode": true,
+    "legacy_settings_migrated": true,
+    "corrupt_settings_recover_safely": true,
+    "browser_local_only": true
+  }
+}
