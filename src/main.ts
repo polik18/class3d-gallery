@@ -1,9 +1,9 @@
-import * as THREE from 'three';
 import './style.css';
 import { createGuestUser } from './backend/auth';
-import { syncRecord, type CloudRecord } from './backend/database';
+import type { CloudRecord } from './backend/database';
 import { calculateDashboard } from './dashboard/dashboard';
 import { setDisplayMode, type DisplayMode } from './exhibition/displayMode';
+import { mountModelViewer } from './exhibition/modelViewer';
 import { generateArtworkURL } from './qrcode/share';
 import { createProfile } from './student/profile';
 
@@ -39,17 +39,27 @@ app.innerHTML = `
       <div class="hero-copy">
         <p class="eyebrow">CLASSROOMS BECOME GALLERIES</p>
         <h1 id="hero-title">讓每一件作品，<br /><em>擁有自己的空間。</em></h1>
-        <p class="hero-intro">Class3D Gallery 是班級作品的沉浸式展示基線。這個預覽已串接現有資料模型；雲端資料庫與正式權限仍待設定。</p>
+        <p class="hero-intro">從電腦選擇 3D 作品，直接在瀏覽器裡旋轉、縮放、平移與播放模型動畫。檔案不會上傳到任何伺服器。</p>
         <div class="hero-actions">
-          <a class="primary-button" href="#works">進入作品展</a>
-          <button class="text-button" id="sync-button" type="button">測試同步介面 <span>↗</span></button>
+          <label class="primary-button model-upload-button" for="model-file-input">
+            選擇 3D 檔案
+            <input id="model-file-input" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" multiple />
+          </label>
+          <a class="text-link" href="#works">瀏覽示範作品 <span>↓</span></a>
         </div>
-        <p class="sync-state" id="sync-state" aria-live="polite">目前使用本機示範資料</p>
+        <p class="upload-help">建議使用單一 GLB；GLTF 請連同它引用的 BIN 與貼圖一起選取。</p>
+        <p class="sync-state" id="model-status" aria-live="polite">可選取檔案或直接拖放到右側展台。</p>
       </div>
-      <div class="scene-shell" aria-label="互動式 3D 展場預覽">
-        <canvas id="gallery-scene"></canvas>
-        <span class="scene-label">LIVE 3D PREVIEW</span>
-        <span class="scene-hint">移動游標探索空間</span>
+      <div class="scene-shell" id="model-drop-zone" aria-label="互動式 3D 模型展台，可拖放 GLB 或 GLTF 檔案">
+        <canvas id="gallery-scene" tabindex="0" aria-label="3D 模型操作區"></canvas>
+        <span class="scene-label">INTERACTIVE 3D VIEWER</span>
+        <div class="viewer-toolbar" aria-label="3D 檢視控制">
+          <button id="reset-view" type="button">重設視角</button>
+          <button id="auto-rotate" type="button" aria-pressed="false">自動旋轉</button>
+          <button id="toggle-animation" type="button" aria-pressed="false" disabled>播放動畫</button>
+        </div>
+        <span class="scene-hint">左鍵旋轉 · 滾輪縮放 · 右鍵平移</span>
+        <span class="drop-hint">放開以載入 3D 作品</span>
       </div>
     </section>
 
@@ -92,9 +102,9 @@ app.innerHTML = `
       <div><p class="section-index">03 / FOUNDATION</p><h2 id="architecture-title">已接好的架構基線</h2></div>
       <ul>
         <li><span>01</span><strong>角色模型</strong><small>教師 / 學生</small></li>
-        <li><span>02</span><strong>資料介面</strong><small>Firebase / Supabase adapter 待實作</small></li>
-        <li><span>03</span><strong>作品分享</strong><small>可產生作品專屬 URL</small></li>
-        <li><span>04</span><strong>展示模式</strong><small>展廳 / 全螢幕 / 簡報</small></li>
+        <li><span>02</span><strong>本機載入</strong><small>GLB / GLTF，不上傳伺服器</small></li>
+        <li><span>03</span><strong>互動操作</strong><small>旋轉 / 縮放 / 平移 / 重設</small></li>
+        <li><span>04</span><strong>動態模型</strong><small>內建動畫 / 自動旋轉</small></li>
       </ul>
     </section>
   </main>
@@ -126,78 +136,22 @@ document.querySelectorAll<HTMLButtonElement>('.share-button').forEach((button) =
   });
 });
 
-document.querySelector<HTMLButtonElement>('#sync-button')?.addEventListener('click', async () => {
-  const button = document.querySelector<HTMLButtonElement>('#sync-button');
-  const state = document.querySelector<HTMLParagraphElement>('#sync-state');
-  if (button) button.disabled = true;
-  if (state) state.textContent = '正在測試同步 adapter…';
-  const results = await Promise.all(records.map(syncRecord));
-  if (state) state.textContent = `Adapter 回應成功：${results.length} 筆（尚未連接雲端）`;
-  if (button) button.disabled = false;
-});
+const sceneCanvas = document.querySelector<HTMLCanvasElement>('#gallery-scene');
+const modelInput = document.querySelector<HTMLInputElement>('#model-file-input');
+const modelStatus = document.querySelector<HTMLElement>('#model-status');
+const dropZone = document.querySelector<HTMLElement>('#model-drop-zone');
+const resetView = document.querySelector<HTMLButtonElement>('#reset-view');
+const autoRotate = document.querySelector<HTMLButtonElement>('#auto-rotate');
+const toggleAnimation = document.querySelector<HTMLButtonElement>('#toggle-animation');
 
-function mountGalleryScene(canvas: HTMLCanvasElement) {
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x11100f, 5, 13);
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 1.5, 6.7);
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x11100f, 1);
-
-  scene.add(new THREE.AmbientLight(0xfff4dd, 1.6));
-  const keyLight = new THREE.DirectionalLight(0xffb968, 4);
-  keyLight.position.set(2, 5, 4);
-  scene.add(keyLight);
-
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(10, 12),
-    new THREE.MeshStandardMaterial({ color: 0x22201d, roughness: 0.8 })
-  );
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -1.5;
-  floor.position.z = -1;
-  scene.add(floor);
-
-  const artColors = [0xe8563f, 0x7a9e7e, 0xf1ba55];
-  const group = new THREE.Group();
-  artColors.forEach((color, index) => {
-    const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(1.3, 1.75, 0.12),
-      new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.08 })
-    );
-    frame.position.set((index - 1) * 1.8, 0, index === 1 ? -0.45 : 0);
-    frame.rotation.y = (index - 1) * -0.16;
-    group.add(frame);
-  });
-  scene.add(group);
-
-  let pointerX = 0;
-  let pointerY = 0;
-  canvas.addEventListener('pointermove', (event) => {
-    const bounds = canvas.getBoundingClientRect();
-    pointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 0.55;
-    pointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 0.25;
-  });
-
-  const resize = () => {
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  };
-  new ResizeObserver(resize).observe(canvas);
-  resize();
-
-  renderer.setAnimationLoop((time) => {
-    group.rotation.y += (pointerX - group.rotation.y) * 0.035;
-    group.rotation.x += (-pointerY - group.rotation.x) * 0.035;
-    group.position.y = Math.sin(time * 0.0007) * 0.08;
-    renderer.render(scene, camera);
+if (sceneCanvas && modelInput && modelStatus && dropZone && resetView && autoRotate && toggleAnimation) {
+  mountModelViewer({
+    canvas: sceneCanvas,
+    shell: dropZone,
+    input: modelInput,
+    status: modelStatus,
+    resetButton: resetView,
+    autoRotateButton: autoRotate,
+    animationButton: toggleAnimation
   });
 }
-
-const sceneCanvas = document.querySelector<HTMLCanvasElement>('#gallery-scene');
-if (sceneCanvas) mountGalleryScene(sceneCanvas);
