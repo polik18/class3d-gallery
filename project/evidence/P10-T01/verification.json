@@ -1,0 +1,62 @@
+{
+  "task": "P10-T01",
+  "verified_at": "2026-09-22T09:35:00.000Z",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "73 tests passed, including 200-work scale, hostile text and CSV formula safety cases"
+    },
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "summary": "TypeScript type check passed"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "Vite production build completed"
+    },
+    {
+      "command": "npm run project:validate",
+      "exit_code": 0,
+      "summary": "Project checkpoint and manifest remain consistent"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "No whitespace errors"
+    },
+    {
+      "command": "node project/evidence/P10-T01/smoke.mjs",
+      "exit_code": 0,
+      "summary": "Chrome imported and rendered 200 local images, sorted them, tested hostile filename/comment text, keyboard focus/exit, touch exit, reduced motion and zero upload requests"
+    }
+  ],
+  "browser": {
+    "name": "Google Chrome headless",
+    "works_rendered": 200,
+    "import_and_render_ms": 92,
+    "dom_nodes": 3610,
+    "title_injected_elements": 0,
+    "script_compromise_signal": 0,
+    "keyboard_focus_and_exit": true,
+    "touch_exit": true,
+    "reduced_motion_animation_duration": "1e-05s",
+    "upload_requests": 0,
+    "page_errors": 0
+  },
+  "acceptance": {
+    "two_hundred_thumbnail_gallery_usable": true,
+    "reduced_motion_effective": true,
+    "no_artwork_upload_requests": true,
+    "hostile_text_rendered_safely": true,
+    "keyboard_and_touch_exit_supported": true,
+    "renderer_resource_release_covered_by_tests": true
+  },
+  "evidence": [
+    "project/evidence/P10-T01/large-gallery.png",
+    "project/evidence/P10-T01/smoke.mjs"
+  ]
+}

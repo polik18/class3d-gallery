@@ -1,23 +1,23 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 39,
+  "revision": 40,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P10",
   "current_task": "P10-T01",
-  "status": "IN_PROGRESS",
+  "status": "VERIFYING",
   "progress_percent": 92,
   "owner": "huangjianzhe",
   "started_at": "2026-09-22T09:25:31.087Z",
-  "updated_at": "2026-09-22T09:31:47.712Z",
+  "updated_at": "2026-09-22T09:32:46.443Z",
   "base_commit": "ec9745944688b8a56c251ee99839cd3ca87d140d",
   "delivery_commit": null,
   "lease": {
     "owner": "huangjianzhe",
     "acquired_at": "2026-09-22T09:25:31.087Z",
-    "heartbeat_at": "2026-09-22T09:31:47.712Z",
-    "expires_at": "2026-09-22T10:01:47.712Z"
+    "heartbeat_at": "2026-09-22T09:32:46.443Z",
+    "expires_at": "2026-09-22T10:02:46.443Z"
   },
   "expected_files": [
     "tests/",
@@ -25,20 +25,22 @@
     "tests/quality.test.ts"
   ],
   "last_verified": {
-    "commit": "ec9745944688b8a56c251ee99839cd3ca87d140d",
+    "commit": "cba13587fbe6568ca7a9ff59eadd55d4f6e42b5b",
     "commands": [
+      "npm test",
       "npm run check",
-      "npm run test:quality",
+      "npm run build",
+      "npm run project:validate",
+      "git diff --check",
       "node project/evidence/P10-T01/smoke.mjs"
     ],
-    "result": "PARTIAL_PASS",
+    "result": "PASS",
     "evidence": [
-      "project/evidence/P09-T01/verification.json",
-      "project/evidence/P09-T01/auto-carousel.png",
-      "project/evidence/P09-T01/auto-overview.png"
+      "project/evidence/P10-T01/verification.json",
+      "project/evidence/P10-T01/large-gallery.png"
     ]
   },
-  "next_step": "執行 P10 全套回歸、保存 200 件作品與安全驗證 evidence 後驗收",
+  "next_step": "提交 P10 效能、無障礙與安全 evidence，推送後執行 task:finish 驗收",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -51,7 +53,7 @@
     "P07-T01": "ACCEPTED",
     "P08-T01": "ACCEPTED",
     "P09-T01": "ACCEPTED",
-    "P10-T01": "IN_PROGRESS",
+    "P10-T01": "VERIFYING",
     "P11-T01": "PENDING"
   }
 }
