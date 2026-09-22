@@ -1,23 +1,23 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 43,
+  "revision": 44,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P11",
   "current_task": "P11-T01",
-  "status": "IN_PROGRESS",
+  "status": "VERIFYING",
   "progress_percent": 97,
   "owner": "huangjianzhe",
   "started_at": "2026-09-22T09:33:27.550Z",
-  "updated_at": "2026-09-22T09:44:35.914Z",
+  "updated_at": "2026-09-22T09:48:50.881Z",
   "base_commit": "2afe2bc76933729f6f929d011b3860e4c768a8e9",
   "delivery_commit": null,
   "lease": {
     "owner": "huangjianzhe",
     "acquired_at": "2026-09-22T09:33:27.550Z",
-    "heartbeat_at": "2026-09-22T09:44:35.914Z",
-    "expires_at": "2026-09-22T10:14:35.914Z"
+    "heartbeat_at": "2026-09-22T09:48:50.881Z",
+    "expires_at": "2026-09-22T10:18:50.881Z"
   },
   "expected_files": [
     "README.md",
@@ -26,22 +26,26 @@
     "src/main.ts"
   ],
   "last_verified": {
-    "commit": "2afe2bc76933729f6f929d011b3860e4c768a8e9",
+    "commit": "33f5ebd4579c3d0764bdeabad21cb3548b4eb29c",
     "commands": [
       "npm test",
       "npm run check",
       "npm run build",
       "npm run project:validate",
       "git diff --check",
-      "node project/evidence/P11-T01/browser-smoke.mjs"
+      "node project/evidence/P11-T01/browser-smoke.mjs",
+      "GitHub Pages workflow 35712138595",
+      "Online five-media smoke test"
     ],
-    "result": "PARTIAL_PASS",
+    "result": "PASS",
     "evidence": [
+      "project/evidence/P11-T01/verification.json",
       "project/evidence/P11-T01/local-mixed-media.png",
+      "project/evidence/P11-T01/online-mixed-media.png",
       "project/evidence/P11-T01/class3d-gallery.c3dg"
     ]
   },
-  "next_step": "提交 P11 發布候選版，合併 main 並監看 GitHub Pages workflow",
+  "next_step": "提交 P11 線上驗收證據，執行 task:finish，將最終 checkpoint 快轉至 main 並確認 Pages",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -55,6 +59,6 @@
     "P08-T01": "ACCEPTED",
     "P09-T01": "ACCEPTED",
     "P10-T01": "ACCEPTED",
-    "P11-T01": "IN_PROGRESS"
+    "P11-T01": "VERIFYING"
   }
 }

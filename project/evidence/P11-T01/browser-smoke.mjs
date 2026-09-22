@@ -21,6 +21,7 @@ let messageId = 0;
 const pending = new Map();
 const pageErrors = [];
 const requests = [];
+const downloads = [];
 socket.addEventListener('message', (event) => {
   const message = JSON.parse(event.data);
   if (message.id && pending.has(message.id)) {
@@ -34,6 +35,7 @@ socket.addEventListener('message', (event) => {
     pageErrors.push(details.exception?.description ?? details.text);
   }
   if (message.method === 'Network.requestWillBeSent') requests.push(message.params.request);
+  if (message.method === 'Browser.downloadWillBegin') downloads.push(message.params);
 });
 
 function send(method, params = {}) {
@@ -76,8 +78,22 @@ await evaluate(`(async () => {
   localStorage.clear();
   sessionStorage.clear();
   await new Promise((resolve) => {
-    const request = indexedDB.deleteDatabase('class3d-gallery-v2');
-    request.onsuccess = request.onerror = request.onblocked = () => resolve();
+    const request = indexedDB.open('class3d-gallery-v2');
+    request.onerror = () => resolve();
+    request.onsuccess = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains('gallery')) {
+        database.close();
+        resolve();
+        return;
+      }
+      const transaction = database.transaction('gallery', 'readwrite');
+      transaction.objectStore('gallery').clear();
+      transaction.oncomplete = transaction.onerror = () => {
+        database.close();
+        resolve();
+      };
+    };
   });
   location.reload();
 })()`);
@@ -136,15 +152,15 @@ await waitFor("document.querySelector('#library-status').textContent.includes('�
 await play('三角星球', '.media-stage canvas', "document.querySelector('#media-status').textContent.includes('已載入')");
 
 await send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: evidenceDir, eventsEnabled: true });
-const archivesBefore = (await readdir(evidenceDir)).filter((name) => name.endsWith('.c3dg')).length;
+const downloadsBefore = downloads.length;
 await evaluate("document.querySelector('#export-local-gallery').click()");
+await waitFor("document.querySelector('#library-status').textContent.includes('已匯出 5 件')", 'archive export status');
 for (let attempt = 0; attempt < 100; attempt += 1) {
-  const archivesNow = (await readdir(evidenceDir)).filter((name) => name.endsWith('.c3dg')).length;
-  if (archivesNow > archivesBefore) break;
+  if (downloads.length > downloadsBefore) break;
   await new Promise((resolve) => setTimeout(resolve, 50));
 }
 const archivesAfter = (await readdir(evidenceDir)).filter((name) => name.endsWith('.c3dg')).length;
-assert(archivesAfter > archivesBefore, 'local gallery archive was not downloaded');
+assert(downloads.length > downloadsBefore && archivesAfter > 0, 'local gallery archive was not downloaded');
 
 await evaluate("document.querySelector('#works').scrollIntoView(); true");
 await new Promise((resolve) => setTimeout(resolve, 200));

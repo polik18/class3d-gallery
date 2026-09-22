@@ -1,0 +1,79 @@
+{
+  "task": "P11-T01",
+  "verified_at": "2026-09-22T09:47:00.000Z",
+  "result": "PASS",
+  "release_commit": "33f5ebd4579c3d0764bdeabad21cb3548b4eb29c",
+  "public_url": "https://polik18.github.io/class3d-gallery/",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "73 tests passed across project state, domain, ingest, classification, storage, renderers, gallery, settings, engagement, showcase and quality"
+    },
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "summary": "TypeScript type check passed"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "Vite production build completed with the GitHub Pages base path"
+    },
+    {
+      "command": "npm run project:validate",
+      "exit_code": 0,
+      "summary": "Project checkpoint and manifest remain consistent"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "No whitespace errors"
+    },
+    {
+      "command": "node project/evidence/P11-T01/browser-smoke.mjs",
+      "exit_code": 0,
+      "summary": "Local release candidate displayed image, video, audio, PDF and 3D; IndexedDB save/reload and archive download passed"
+    },
+    {
+      "command": "APP_URL=https://polik18.github.io/class3d-gallery/ EVIDENCE_PREFIX=online node project/evidence/P11-T01/browser-smoke.mjs",
+      "exit_code": 0,
+      "summary": "Published GitHub Pages site passed the same five-media, IndexedDB reload, archive and zero-upload smoke test"
+    }
+  ],
+  "deployment": {
+    "workflow": "Deploy Vite site to Pages",
+    "run_id": 35712138595,
+    "run_url": "https://github.com/polik18/class3d-gallery/actions/runs/35712138595",
+    "head_sha": "33f5ebd4579c3d0764bdeabad21cb3548b4eb29c",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-09-22T09:45:00Z",
+    "completed_at": "2026-09-22T09:45:33Z",
+    "page_http_status": 200,
+    "deployed_js": "assets/index-DQe77Smv.js",
+    "deployed_css": "assets/index-Bgdd1psQ.css"
+  },
+  "online_browser": {
+    "media": ["image", "video", "audio", "pdf", "model3d"],
+    "cards": 5,
+    "indexed_db_save_and_reload": true,
+    "archive_downloaded": true,
+    "upload_requests": 0,
+    "page_errors": 0
+  },
+  "acceptance": {
+    "complete_regression_passed": true,
+    "documentation_updated": true,
+    "main_updated": true,
+    "github_pages_deployed": true,
+    "online_mixed_media_smoke_passed": true,
+    "browser_local_persistence_available": true
+  },
+  "evidence": [
+    "project/evidence/P11-T01/local-mixed-media.png",
+    "project/evidence/P11-T01/online-mixed-media.png",
+    "project/evidence/P11-T01/class3d-gallery.c3dg",
+    "project/evidence/P11-T01/browser-smoke.mjs"
+  ]
+}
