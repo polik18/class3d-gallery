@@ -1,0 +1,61 @@
+{
+  "task": "P09-T01",
+  "verified_at": "2026-09-22T09:24:06.000Z",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "70 tests passed, including five deterministic idle-showcase timing tests"
+    },
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "summary": "TypeScript type check passed"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "Vite production build completed"
+    },
+    {
+      "command": "npm run project:validate",
+      "exit_code": 0,
+      "summary": "Project checkpoint and manifest remain consistent"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "No whitespace errors"
+    },
+    {
+      "command": "node project/evidence/P09-T01/smoke.mjs",
+      "exit_code": 0,
+      "summary": "Chrome exercised idle entry, title/carousel/overview/popular loop, activity exit, reduced motion, mobile layout and local-only behavior"
+    }
+  ],
+  "browser": {
+    "name": "Google Chrome headless",
+    "phases_seen": ["title", "carousel", "overview", "popular", "title"],
+    "activity_exit": true,
+    "reduced_motion_transition": "none",
+    "automatic_popularity_writes": 0,
+    "interaction_network_requests": 0,
+    "page_errors": 0,
+    "mobile_document_width": 390,
+    "mobile_viewport_width": 390
+  },
+  "acceptance": {
+    "default_idle_entry_is_30_seconds": true,
+    "title_carousel_overview_popular_loop": true,
+    "human_activity_exits_immediately": true,
+    "reduced_motion_supported": true,
+    "automatic_showcase_does_not_increase_popularity": true,
+    "timings_are_teacher_configurable": true
+  },
+  "evidence": [
+    "project/evidence/P09-T01/auto-carousel.png",
+    "project/evidence/P09-T01/auto-overview.png",
+    "project/evidence/P09-T01/smoke.mjs"
+  ]
+}

@@ -59,7 +59,15 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
     );
     layout.append(media, copy);
     stage.append(layout, status);
-    if (!renderable || mountedAssetId === asset.id) return;
+    if (!renderable) {
+      if (mountedAssetId !== null) {
+        mountedAssetId = null;
+        renderGeneration += 1;
+        session.clear();
+      }
+      return;
+    }
+    if (mountedAssetId === asset.id) return;
     mountedAssetId = asset.id;
     const generation = ++renderGeneration;
     await session.show(() => mountRenderer(media, renderable, status));
@@ -71,7 +79,14 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
       void video.play().catch(() => undefined);
     }
     media.querySelector<HTMLButtonElement>('[data-action=rotate]')?.click();
-    media.querySelector<HTMLButtonElement>('[data-action=animation]:not(:disabled)')?.click();
+    for (let attempt = 0; attempt < 20 && generation === renderGeneration; attempt += 1) {
+      const animationButton = media.querySelector<HTMLButtonElement>('[data-action=animation]');
+      if (animationButton && !animationButton.disabled) {
+        animationButton.click();
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
   };
 
   const render = (snapshot: ShowcaseSnapshot) => {
@@ -103,6 +118,7 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
 
     if (snapshot.phase === 'title') {
       mountedAssetId = null;
+      renderGeneration += 1;
       session.clear();
       const copy = document.createElement('div');
       copy.className = 'showcase-title-card';
@@ -117,6 +133,7 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
       void renderCarousel(snapshot, assets, stage);
     } else if (snapshot.phase === 'overview') {
       mountedAssetId = null;
+      renderGeneration += 1;
       session.clear();
       stage.append(text('p', 'showcase-kicker', `ALL WORKS / ${assets.length}`), text('h2', '', '全體作品'));
       const grid = document.createElement('div');
@@ -125,6 +142,7 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
       stage.append(grid);
     } else {
       mountedAssetId = null;
+      renderGeneration += 1;
       session.clear();
       const popular = [...assets].sort((left, right) => popularityScore(right) - popularityScore(left)).slice(0, 3);
       stage.append(text('p', 'showcase-kicker', 'VISITORS\' CHOICE'), text('h2', '', '人氣精選'));
