@@ -31,7 +31,7 @@
       "weight": 10,
       "depends_on": ["P01-T01"],
       "task_doc": "project/tasks/P02-T01.md",
-      "outputs": ["src/assets/ingest.ts", "src/assets/importQueue.ts"],
+      "outputs": ["src/assets/ingest.ts", "src/assets/importQueue.ts", "tests/ingest.test.ts"],
       "acceptance": ["可一次拖入至少 30 件混合檔案", "單一失敗不阻斷其他檔案"]
     },
     {

@@ -1,0 +1,43 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P02-T01",
+  "verified_at": "2026-09-22T12:07:05+08:00",
+  "base_commit": "3f5c2e983cfb19df52eea1eed5ebe6671d30fc7f",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "24 tests passed: 9 project-state, 7 domain and 8 ingestion tests"
+    },
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "summary": "TypeScript strict check passed"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "Vite production build passed; existing bundle-size warning remains non-blocking"
+    },
+    {
+      "command": "npm run project:validate",
+      "exit_code": 0,
+      "summary": "Project checkpoint and manifest remain consistent"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "No whitespace errors"
+    }
+  ],
+  "acceptance": {
+    "mixed_batch_count": 35,
+    "mixed_batch_failures": 0,
+    "directory_batch_traversal": true,
+    "per_file_error_isolation": true,
+    "bounded_concurrency": true,
+    "stable_result_order": true,
+    "abort_and_progress": true
+  }
+}

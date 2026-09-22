@@ -1,22 +1,31 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 7,
+  "revision": 9,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P02",
   "current_task": "P02-T01",
-  "status": "PENDING",
+  "status": "VERIFYING",
   "progress_percent": 16,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T03:28:42.716Z",
-  "base_commit": "9f45e45d74d37914b73e54f93e26de5cb4348b93",
-  "delivery_commit": "ff07a4a1a26b9f75f469aabace6623641a1007dd",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T04:02:39.645Z",
+  "updated_at": "2026-09-22T04:08:08.157Z",
+  "base_commit": "3f5c2e983cfb19df52eea1eed5ebe6671d30fc7f",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T04:02:39.645Z",
+    "heartbeat_at": "2026-09-22T04:08:08.156Z",
+    "expires_at": "2026-09-22T04:38:08.156Z"
+  },
+  "expected_files": [
+    "src/assets/ingest.ts",
+    "src/assets/importQueue.ts",
+    "tests/ingest.test.ts"
+  ],
   "last_verified": {
-    "commit": "9f45e45d74d37914b73e54f93e26de5cb4348b93",
+    "commit": "3f5c2e983cfb19df52eea1eed5ebe6671d30fc7f",
     "commands": [
       "npm test",
       "npm run check",
@@ -26,15 +35,15 @@
     ],
     "result": "PASS",
     "evidence": [
-      "project/evidence/P01-T01/verification.json"
+      "project/evidence/P02-T01/verification.json"
     ]
   },
-  "next_step": "執行 npm run task:start -- P02-T01",
+  "next_step": "提交 P02-T01 匯入佇列與驗證證據，取得 delivery commit",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
     "P01-T01": "ACCEPTED",
-    "P02-T01": "PENDING",
+    "P02-T01": "VERIFYING",
     "P03-T01": "PENDING",
     "P04-T01": "PENDING",
     "P05-T01": "PENDING",
