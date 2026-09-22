@@ -101,7 +101,7 @@
       "weight": 6,
       "depends_on": ["P08-T01"],
       "task_doc": "project/tasks/P09-T01.md",
-      "outputs": ["src/showcase/idleController.ts", "src/showcase/transitions.ts"],
+      "outputs": ["src/showcase/idleController.ts", "src/showcase/transitions.ts", "src/showcase/view.ts", "tests/showcase.test.ts"],
       "acceptance": ["30 秒閒置進入展示", "標題、輪播、縮圖牆、熱門展循環", "人工操作立即退出"]
     },
     {

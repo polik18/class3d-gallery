@@ -1,32 +1,39 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 33,
+  "revision": 35,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P09",
   "current_task": "P09-T01",
-  "status": "PENDING",
+  "status": "IN_PROGRESS",
   "progress_percent": 86,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T09:08:33.813Z",
-  "base_commit": "1f665d5fd8adf6c97f2e88990db882e3a0cbce74",
-  "delivery_commit": "fe8d6255f835180df4ae726aafee3f248d787cd6",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T09:09:07.511Z",
+  "updated_at": "2026-09-22T09:19:35.951Z",
+  "base_commit": "5387ac72868a5cae7c70b30f88fb40ddb47a47d1",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T09:09:07.511Z",
+    "heartbeat_at": "2026-09-22T09:19:35.951Z",
+    "expires_at": "2026-09-22T09:49:35.951Z"
+  },
+  "expected_files": [
+    "src/showcase/idleController.ts",
+    "src/showcase/transitions.ts",
+    "src/showcase/view.ts",
+    "tests/showcase.test.ts"
+  ],
   "last_verified": {
-    "commit": "576d4c69be36589d6c0136cda9b4072b7d3e816a",
+    "commit": "5387ac72868a5cae7c70b30f88fb40ddb47a47d1",
     "commands": [
-      "npm test",
       "npm run check",
+      "npm run test:showcase",
       "npm run build",
-      "npm run project:validate",
-      "git diff --check",
-      "node project/evidence/P08-T01/smoke.mjs",
-      "Chrome headless 390px engagement dialog smoke test"
+      "git diff --check"
     ],
-    "result": "PASS",
+    "result": "PARTIAL_PASS",
     "evidence": [
       "project/evidence/P08-T01/verification.json",
       "project/evidence/P08-T01/local-engagement.png",
@@ -34,7 +41,7 @@
       "project/evidence/P08-T01/class3d-comments.csv"
     ]
   },
-  "next_step": "執行 npm run task:start -- P09-T01",
+  "next_step": "以 Chrome 驗證閒置進入、四階段循環、人工立即退出、減少動態與自動展示不增加人氣",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -46,7 +53,7 @@
     "P06-T01": "ACCEPTED",
     "P07-T01": "ACCEPTED",
     "P08-T01": "ACCEPTED",
-    "P09-T01": "PENDING",
+    "P09-T01": "IN_PROGRESS",
     "P10-T01": "PENDING",
     "P11-T01": "PENDING"
   }

@@ -16,6 +16,8 @@ import { popularityScore } from './gallery/sort';
 import { generateArtworkURL } from './qrcode/share';
 import { mountMediaViewer, type ImportedMediaAsset } from './renderers/mediaViewer';
 import type { RenderableAsset } from './renderers/types';
+import { IdleShowcaseController } from './showcase/idleController';
+import { mountShowcaseView } from './showcase/view';
 import { createProfile } from './student/profile';
 
 const records: CloudRecord[] = [
@@ -66,6 +68,7 @@ app.innerHTML = `
     </a>
     <div class="topbar-actions">
       <span class="topbar-exhibition-title" id="topbar-exhibition-title">我的多媒體展覽</span>
+      <button class="settings-button" id="start-showcase" type="button">展示預覽</button>
       <button class="settings-button" id="open-settings" type="button">展覽設定</button>
       <div class="user-chip"><span class="online-dot"></span>${user.name} · ${user.role === 'teacher' ? '教師模式' : '學生模式'}</div>
     </div>
@@ -163,6 +166,7 @@ app.innerHTML = `
     <div id="settings-view"></div>
   </dialog>
   <dialog class="engagement-dialog" id="engagement-dialog" aria-label="作品按讚與留言"></dialog>
+  <section class="showcase-overlay" id="showcase-overlay" aria-label="自動展示" aria-hidden="true" hidden></section>
 
   <footer><span>Class3D Gallery v1.2</span><span>Architecture Preview · Local Data</span></footer>
 `;
@@ -191,7 +195,9 @@ const worksTitle = document.querySelector<HTMLElement>('#works-title');
 const settingsDialog = document.querySelector<HTMLDialogElement>('#settings-dialog');
 const settingsViewContainer = document.querySelector<HTMLElement>('#settings-view');
 const openSettingsButton = document.querySelector<HTMLButtonElement>('#open-settings');
+const startShowcaseButton = document.querySelector<HTMLButtonElement>('#start-showcase');
 const engagementDialog = document.querySelector<HTMLDialogElement>('#engagement-dialog');
+const showcaseOverlay = document.querySelector<HTMLElement>('#showcase-overlay');
 const gallery = new GalleryController(demoAssets);
 const engagement = new EngagementController();
 const exhibitionSettingsStore = new ExhibitionSettingsStore();
@@ -199,6 +205,7 @@ const renderables = new Map<string, RenderableAsset>();
 let importedOnce = false;
 let mediaViewer: ReturnType<typeof mountMediaViewer> | null = null;
 let engagementView: ReturnType<typeof mountEngagementView> | null = null;
+let idleShowcase: IdleShowcaseController | null = null;
 let visitorId = getVisitorSession();
 let activeExhibitionSettings = exhibitionSettingsStore.load();
 
@@ -224,6 +231,9 @@ function applyExhibitionSettings(settings: ExhibitionSettings) {
   if (galleryCount) galleryCount.hidden = !settings.display.showArtworkCount;
   document.body.dataset.showCategories = String(settings.display.showCategories);
   document.title = `${settings.title} | Class3D Gallery`;
+  idleShowcase?.configure(settings.autoShowcase);
+  renderGallery();
+  engagementView?.refresh();
 }
 
 function categoryOptions(categories: string[], selected?: string) {
@@ -259,7 +269,7 @@ function cardForAsset(asset: AssetRecord, index: number, selected: boolean) {
   const title = document.createElement('h3');
   title.textContent = asset.title;
   const byline = document.createElement('p');
-  byline.textContent = [asset.author, `人氣 ${Math.round(popularityScore(asset))}`].filter(Boolean).join(' · ');
+  byline.textContent = [asset.author, activeExhibitionSettings.engagement.showPopularity ? `人氣 ${Math.round(popularityScore(asset))}` : ''].filter(Boolean).join(' · ');
   copy.append(title, byline);
   const actions = document.createElement('div');
   actions.className = 'work-actions';
@@ -348,6 +358,7 @@ function renderGallery() {
   if (galleryDirection) galleryDirection.value = state.sort.direction;
   if (galleryNumberType) galleryNumberType.value = state.sort.numberType ?? 'seat';
   if (numberTypeControl) numberTypeControl.hidden = state.sort.key !== 'number';
+  idleShowcase?.setAssets(gallery.getAssets());
 }
 
 function syncEngagement(assetId?: string) {
@@ -386,6 +397,34 @@ galleryDirection?.addEventListener('change', () => gallery.setSort({ ...gallery.
 galleryNumberType?.addEventListener('change', () => gallery.setSort({ key: 'number', direction: gallery.getState().sort.direction, numberType: galleryNumberType.value as 'seat' | 'sequence' }));
 galleryCategory?.addEventListener('change', () => gallery.setCategory(galleryCategory.value));
 gallery.subscribe(renderGallery);
+
+if (showcaseOverlay) {
+  const showcaseView = mountShowcaseView({
+    container: showcaseOverlay,
+    getAssets: () => gallery.getAssets(),
+    getRenderable: (assetId) => renderables.get(assetId),
+    getSettings: () => activeExhibitionSettings
+  });
+  idleShowcase = new IdleShowcaseController(activeExhibitionSettings.autoShowcase);
+  idleShowcase.setAssets(gallery.getAssets());
+  idleShowcase.subscribe((snapshot) => {
+    if (snapshot.active && snapshot.phase === 'carousel') {
+      const asset = gallery.getAssets()[snapshot.assetIndex % gallery.getAssets().length];
+      if (asset) engagement.recordView(asset.id, 'automatic');
+    }
+    showcaseView.render(snapshot);
+  });
+  idleShowcase.attachActivity(document);
+  startShowcaseButton?.addEventListener('click', () => idleShowcase?.startNow());
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) idleShowcase?.suspend();
+    else idleShowcase?.resume();
+  });
+  window.addEventListener('pagehide', () => {
+    idleShowcase?.destroy();
+    showcaseView.destroy();
+  }, { once: true });
+}
 
 if (settingsDialog && settingsViewContainer && openSettingsButton) {
   const settingsView = mountSettingsView({

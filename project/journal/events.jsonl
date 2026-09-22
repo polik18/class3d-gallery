@@ -32,3 +32,5 @@
 {"schema":"class3d-project-event-v1","revision":31,"event":"TASK_CHECKPOINTED","task":"P08-T01","status":"IN_PROGRESS","at":"2026-09-22T09:00:13.310Z","detail":"啟動本機預覽，完成按讚、取消讚、留言審核、換訪客、人氣排序、重新載入持久化與匯出下載的瀏覽器 smoke test"}
 {"schema":"class3d-project-event-v1","revision":32,"event":"TASK_CHECKPOINTED","task":"P08-T01","status":"VERIFYING","at":"2026-09-22T09:08:08.700Z","detail":"提交 P08 功能與瀏覽器證據，推送後執行 task:finish 驗收"}
 {"schema":"class3d-project-event-v1","revision":33,"event":"TASK_ACCEPTED","task":"P09-T01","status":"PENDING","at":"2026-09-22T09:08:33.813Z","detail":"P08-T01 accepted at fe8d6255f835180df4ae726aafee3f248d787cd6"}
+{"schema":"class3d-project-event-v1","revision":34,"event":"TASK_STARTED","task":"P09-T01","status":"IN_PROGRESS","at":"2026-09-22T09:09:07.511Z","detail":"P09-T01 started by huangjianzhe"}
+{"schema":"class3d-project-event-v1","revision":35,"event":"TASK_CHECKPOINTED","task":"P09-T01","status":"IN_PROGRESS","at":"2026-09-22T09:19:35.951Z","detail":"以 Chrome 驗證閒置進入、四階段循環、人工立即退出、減少動態與自動展示不增加人氣"}
