@@ -1,31 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 24,
+  "revision": 25,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P06",
-  "current_task": "P06-T01",
-  "status": "VERIFYING",
-  "progress_percent": 60,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T05:22:17.426Z",
-  "updated_at": "2026-09-22T05:40:28.319Z",
+  "current_phase": "P07",
+  "current_task": "P07-T01",
+  "status": "PENDING",
+  "progress_percent": 72,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T05:41:00.632Z",
   "base_commit": "5146ff2f7341aad1be1048f6ba2152d5f40fea82",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T05:22:17.426Z",
-    "heartbeat_at": "2026-09-22T05:40:28.319Z",
-    "expires_at": "2026-09-22T06:10:28.319Z"
-  },
-  "expected_files": [
-    "src/gallery/galleryController.ts",
-    "src/gallery/sort.ts",
-    "tests/gallery.test.ts",
-    "src/main.ts",
-    "src/renderers/mediaViewer.ts"
-  ],
+  "delivery_commit": "493d2aa7f6092872ec37a203738a142a9d0b3bc5",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "01eeebc004d58b1e737d186e3ebcba6027cbb8e8",
     "commands": [
@@ -43,7 +32,7 @@
       "project/evidence/P06-T01/gallery-modes.png"
     ]
   },
-  "next_step": "提交 P06 最終修正與驗證證據，推送後以 delivery commit 驗收",
+  "next_step": "執行 npm run task:start -- P07-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -52,7 +41,7 @@
     "P03-T01": "ACCEPTED",
     "P04-T01": "ACCEPTED",
     "P05-T01": "ACCEPTED",
-    "P06-T01": "VERIFYING",
+    "P06-T01": "ACCEPTED",
     "P07-T01": "PENDING",
     "P08-T01": "PENDING",
     "P09-T01": "PENDING",
