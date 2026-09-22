@@ -1,30 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 12,
+  "revision": 13,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P03",
-  "current_task": "P03-T01",
-  "status": "VERIFYING",
-  "progress_percent": 26,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T04:09:00.592Z",
-  "updated_at": "2026-09-22T04:13:14.529Z",
+  "current_phase": "P04",
+  "current_task": "P04-T01",
+  "status": "PENDING",
+  "progress_percent": 34,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T04:13:24.584Z",
   "base_commit": "7204e6076e82179fccc2e8c2faf2005b0ed3a16a",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T04:09:00.592Z",
-    "heartbeat_at": "2026-09-22T04:13:14.529Z",
-    "expires_at": "2026-09-22T04:43:14.529Z"
-  },
-  "expected_files": [
-    "src/assets/classifier.ts",
-    "src/assets/fileNameParser.ts",
-    "src/assets/dependencyResolver.ts",
-    "tests/classification.test.ts"
-  ],
+  "delivery_commit": "f3961d69bb4e5da1d3a9955afbd80a9a54fbd75b",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "7204e6076e82179fccc2e8c2faf2005b0ed3a16a",
     "commands": [
@@ -39,13 +29,13 @@
       "project/evidence/P03-T01/verification.json"
     ]
   },
-  "next_step": "提交 P03-T01 分類與相依檔解析，取得 delivery commit",
+  "next_step": "執行 npm run task:start -- P04-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
     "P01-T01": "ACCEPTED",
     "P02-T01": "ACCEPTED",
-    "P03-T01": "VERIFYING",
+    "P03-T01": "ACCEPTED",
     "P04-T01": "PENDING",
     "P05-T01": "PENDING",
     "P06-T01": "PENDING",
