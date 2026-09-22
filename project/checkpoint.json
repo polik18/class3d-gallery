@@ -1,30 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 3,
+  "revision": 4,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P00",
-  "current_task": "P00-T01",
-  "status": "VERIFYING",
-  "progress_percent": 0,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T03:19:16.727Z",
-  "updated_at": "2026-09-22T03:22:36.546Z",
+  "current_phase": "P01",
+  "current_task": "P01-T01",
+  "status": "PENDING",
+  "progress_percent": 8,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T03:23:02.648Z",
   "base_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T03:19:16.727Z",
-    "heartbeat_at": "2026-09-22T03:22:36.546Z",
-    "expires_at": "2026-09-22T03:52:36.546Z"
-  },
-  "expected_files": [
-    "AGENTS.md",
-    "project/checkpoint.json",
-    "project/task-manifest.json",
-    "scripts/project-status.mjs"
-  ],
+  "delivery_commit": "1e3f6c4426238b70755c997562d8c920c1bfab02",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
     "commands": [
@@ -39,10 +29,10 @@
       "project/evidence/P00-T01/verification.json"
     ]
   },
-  "next_step": "提交 P00-T01（含並行寫入鎖與 9 項測試），取得 delivery commit",
+  "next_step": "執行 npm run task:start -- P01-T01",
   "blockers": [],
   "task_states": {
-    "P00-T01": "VERIFYING",
+    "P00-T01": "ACCEPTED",
     "P01-T01": "PENDING",
     "P02-T01": "PENDING",
     "P03-T01": "PENDING",
