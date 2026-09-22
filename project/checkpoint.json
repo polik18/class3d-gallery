@@ -1,29 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 40,
+  "revision": 41,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P10",
-  "current_task": "P10-T01",
-  "status": "VERIFYING",
-  "progress_percent": 92,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T09:25:31.087Z",
-  "updated_at": "2026-09-22T09:32:46.443Z",
+  "current_phase": "P11",
+  "current_task": "P11-T01",
+  "status": "PENDING",
+  "progress_percent": 97,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T09:33:04.582Z",
   "base_commit": "ec9745944688b8a56c251ee99839cd3ca87d140d",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T09:25:31.087Z",
-    "heartbeat_at": "2026-09-22T09:32:46.443Z",
-    "expires_at": "2026-09-22T10:02:46.443Z"
-  },
-  "expected_files": [
-    "tests/",
-    "project/evidence/P10-T01/",
-    "tests/quality.test.ts"
-  ],
+  "delivery_commit": "75b11f8e583e5fb0ac44682dd61c2136769a2484",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "cba13587fbe6568ca7a9ff59eadd55d4f6e42b5b",
     "commands": [
@@ -40,7 +31,7 @@
       "project/evidence/P10-T01/large-gallery.png"
     ]
   },
-  "next_step": "提交 P10 效能、無障礙與安全 evidence，推送後執行 task:finish 驗收",
+  "next_step": "執行 npm run task:start -- P11-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -53,7 +44,7 @@
     "P07-T01": "ACCEPTED",
     "P08-T01": "ACCEPTED",
     "P09-T01": "ACCEPTED",
-    "P10-T01": "VERIFYING",
+    "P10-T01": "ACCEPTED",
     "P11-T01": "PENDING"
   }
 }
