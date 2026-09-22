@@ -1,0 +1,24 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P03-T01",
+  "verified_at": "2026-09-22T12:12:29+08:00",
+  "base_commit": "7204e6076e82179fccc2e8c2faf2005b0ed3a16a",
+  "result": "PASS",
+  "commands": [
+    { "command": "npm test", "exit_code": 0, "summary": "31 tests passed, including 7 classification and dependency tests" },
+    { "command": "npm run check", "exit_code": 0, "summary": "TypeScript strict check passed" },
+    { "command": "npm run build", "exit_code": 0, "summary": "Vite production build passed; existing bundle-size warning remains non-blocking" },
+    { "command": "npm run project:validate", "exit_code": 0, "summary": "Project checkpoint and manifest remain consistent" },
+    { "command": "git diff --check", "exit_code": 0, "summary": "No whitespace errors" }
+  ],
+  "acceptance": {
+    "common_media_classification": true,
+    "signature_detection": true,
+    "seat_and_sequence_parsing": true,
+    "filename_description": true,
+    "gltf_dependency_grouping": true,
+    "missing_dependency_reporting": true,
+    "external_dependency_blocking": true,
+    "per_asset_parse_error": true
+  }
+}

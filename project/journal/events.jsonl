@@ -9,3 +9,5 @@
 {"schema":"class3d-project-event-v1","revision":8,"event":"TASK_STARTED","task":"P02-T01","status":"IN_PROGRESS","at":"2026-09-22T04:02:39.645Z","detail":"P02-T01 started by huangjianzhe"}
 {"schema":"class3d-project-event-v1","revision":9,"event":"TASK_CHECKPOINTED","task":"P02-T01","status":"VERIFYING","at":"2026-09-22T04:08:08.157Z","detail":"提交 P02-T01 匯入佇列與驗證證據，取得 delivery commit"}
 {"schema":"class3d-project-event-v1","revision":10,"event":"TASK_ACCEPTED","task":"P03-T01","status":"PENDING","at":"2026-09-22T04:08:17.802Z","detail":"P02-T01 accepted at ac49dcc4dbae1fad781b99e1cb145167878eae86"}
+{"schema":"class3d-project-event-v1","revision":11,"event":"TASK_STARTED","task":"P03-T01","status":"IN_PROGRESS","at":"2026-09-22T04:09:00.592Z","detail":"P03-T01 started by huangjianzhe"}
+{"schema":"class3d-project-event-v1","revision":12,"event":"TASK_CHECKPOINTED","task":"P03-T01","status":"VERIFYING","at":"2026-09-22T04:13:14.529Z","detail":"提交 P03-T01 分類與相依檔解析，取得 delivery commit"}

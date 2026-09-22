@@ -41,7 +41,7 @@
       "weight": 8,
       "depends_on": ["P02-T01"],
       "task_doc": "project/tasks/P03-T01.md",
-      "outputs": ["src/assets/classifier.ts", "src/assets/fileNameParser.ts", "src/assets/dependencyResolver.ts"],
+      "outputs": ["src/assets/classifier.ts", "src/assets/fileNameParser.ts", "src/assets/dependencyResolver.ts", "tests/classification.test.ts"],
       "acceptance": ["常用媒體格式分類正確", "結構化檔名解析正確", "GLTF 相依檔不成為獨立作品"]
     },
     {
