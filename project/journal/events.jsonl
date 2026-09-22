@@ -27,3 +27,4 @@
 {"schema":"class3d-project-event-v1","revision":26,"event":"TASK_STARTED","task":"P07-T01","status":"IN_PROGRESS","at":"2026-09-22T06:15:05.204Z","detail":"P07-T01 started by huangjianzhe"}
 {"schema":"class3d-project-event-v1","revision":27,"event":"TASK_CHECKPOINTED","task":"P07-T01","status":"IN_PROGRESS","at":"2026-09-22T06:21:49.060Z","detail":"以 Chrome 編輯、即時預覽、保存並重新載入展覽標題與顯示選項，確認各展覽模式共用標題"}
 {"schema":"class3d-project-event-v1","revision":28,"event":"TASK_CHECKPOINTED","task":"P07-T01","status":"VERIFYING","at":"2026-09-22T08:20:13.386Z","detail":"提交 P07 最終修正與驗證證據，推送後以 delivery commit 驗收"}
+{"schema":"class3d-project-event-v1","revision":29,"event":"TASK_ACCEPTED","task":"P08-T01","status":"PENDING","at":"2026-09-22T08:20:36.003Z","detail":"P07-T01 accepted at f00772aa1f5bfe4ff659db9e7cc1848e69930b46"}

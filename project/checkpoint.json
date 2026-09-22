@@ -1,31 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 28,
+  "revision": 29,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P07",
-  "current_task": "P07-T01",
-  "status": "VERIFYING",
-  "progress_percent": 72,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T06:15:05.204Z",
-  "updated_at": "2026-09-22T08:20:13.386Z",
+  "current_phase": "P08",
+  "current_task": "P08-T01",
+  "status": "PENDING",
+  "progress_percent": 78,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T08:20:36.003Z",
   "base_commit": "adf5acfb70a0ad0e7162e5990dcae9df431a5b96",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T06:15:05.204Z",
-    "heartbeat_at": "2026-09-22T08:20:13.386Z",
-    "expires_at": "2026-09-22T08:50:13.386Z"
-  },
-  "expected_files": [
-    "src/exhibition/settings.ts",
-    "src/exhibition/settingsView.ts",
-    "tests/settings.test.ts",
-    "src/exhibition/types.ts",
-    "src/main.ts"
-  ],
+  "delivery_commit": "f00772aa1f5bfe4ff659db9e7cc1848e69930b46",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "f854732c01ee319b34ffbbcefa8733c4f19b58a0",
     "commands": [
@@ -43,7 +32,7 @@
       "project/evidence/P07-T01/exhibition-settings.png"
     ]
   },
-  "next_step": "提交 P07 最終修正與驗證證據，推送後以 delivery commit 驗收",
+  "next_step": "執行 npm run task:start -- P08-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -53,7 +42,7 @@
     "P04-T01": "ACCEPTED",
     "P05-T01": "ACCEPTED",
     "P06-T01": "ACCEPTED",
-    "P07-T01": "VERIFYING",
+    "P07-T01": "ACCEPTED",
     "P08-T01": "PENDING",
     "P09-T01": "PENDING",
     "P10-T01": "PENDING",
