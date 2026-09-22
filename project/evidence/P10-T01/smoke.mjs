@@ -119,25 +119,29 @@ assert.equal(await evaluate("document.querySelectorAll('[data-role=approved] img
 assert.equal(await evaluate('window.__class3dXss'), 0);
 await evaluate("document.querySelector('[data-action=close]').click()");
 
-await evaluate("document.querySelector('#start-showcase').focus()");
-assert.equal(await evaluate('document.activeElement.id'), 'start-showcase');
-await evaluate("document.querySelector('#start-showcase').click()");
+await evaluate("document.querySelector('#start-exhibition').focus()");
+assert.equal(await evaluate('document.activeElement.id'), 'start-exhibition');
+await evaluate("document.querySelector('#start-exhibition').click()");
+await waitFor("document.querySelector('#start-exhibition-dialog').open", 'start exhibition dialog');
+await evaluate("document.querySelector('[data-start-mode=single]').click()");
 await waitFor("!document.querySelector('#showcase-overlay').hidden", 'focusable control starts showcase');
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
 await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
 await waitFor("document.querySelector('#showcase-overlay').hidden", 'keyboard exits showcase');
 
-await evaluate("document.querySelector('#start-showcase').click()");
+await evaluate("document.querySelector('#start-exhibition').click(); document.querySelector('[data-start-mode=single]').click()");
 await waitFor("!document.querySelector('#showcase-overlay').hidden", 'touch test showcase');
 await evaluate("document.dispatchEvent(new TouchEvent('touchstart', { bubbles: true }))");
-await waitFor("document.querySelector('#showcase-overlay').hidden", 'touch exits showcase');
+assert.equal(await evaluate("document.querySelector('#showcase-overlay').hidden"), false, 'manual exhibition must remain open during touch interaction');
+await evaluate("document.querySelector('.showcase-close').click()");
+await waitFor("document.querySelector('#showcase-overlay').hidden", 'explicit control exits exhibition');
 
 await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-await evaluate("document.querySelector('#start-showcase').click()");
-await waitFor("document.querySelector('.showcase-stage.transition-none')", 'reduced motion class');
+await evaluate("document.querySelector('#start-exhibition').click(); document.querySelector('[data-start-mode=multiple]').click()");
+await waitFor("document.querySelector('.showcase-stage--overview.showcase-stage--manual.transition-none')", 'reduced motion class');
 const reducedMotion = await evaluate(`({
   transition: document.querySelector('.showcase-stage').className,
-  progressAnimationDuration: getComputedStyle(document.querySelector('.showcase-progress i')).animationDuration
+  stageAnimationDuration: getComputedStyle(document.querySelector('.showcase-stage')).animationDuration
 })`);
 await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
 await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
@@ -160,7 +164,8 @@ console.log(JSON.stringify({
   sortVerified: true,
   filenameAndCommentXssSafe: true,
   keyboardFocusableAndExit: true,
-  touchExit: true,
+  manualTouchInteraction: true,
+  explicitExit: true,
   reducedMotion,
   uploadRequests: uploadRequests.length,
   pageErrors

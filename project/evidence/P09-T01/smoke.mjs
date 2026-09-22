@@ -108,8 +108,8 @@ await evaluate("document.dispatchEvent(new PointerEvent('pointerdown', { bubbles
 await waitFor("document.querySelector('#showcase-overlay').hidden", 'human activity exits showcase');
 
 await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-await evaluate("document.querySelector('#start-showcase').click()");
-await waitFor("document.querySelector('.showcase-stage--title.transition-none')", 'reduced motion title');
+await evaluate("document.querySelector('#start-exhibition').click(); document.querySelector('[data-start-mode=single]').click()");
+await waitFor("document.querySelector('.showcase-stage--carousel.showcase-stage--manual.transition-none')", 'reduced motion manual exhibition');
 
 await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
 await new Promise((resolve) => setTimeout(resolve, 100));

@@ -104,6 +104,10 @@ export class CardPreviewManager {
     if (audio) audio.controls = false;
     const iframe = target.querySelector<HTMLIFrameElement>('iframe');
     if (iframe) iframe.src = iframe.src.replace(/#.*$/, '#toolbar=0&navpanes=0');
-    target.querySelector<HTMLButtonElement>('[data-action="rotate"]')?.click();
+    const rotate = target.querySelector<HTMLButtonElement>('[data-action="rotate"]');
+    if (rotate) {
+      rotate.addEventListener('click', (event) => event.stopPropagation(), { once: true });
+      rotate.click();
+    }
   }
 }

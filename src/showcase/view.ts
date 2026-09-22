@@ -1,5 +1,6 @@
 import type { AssetRecord } from '../assets/types.ts';
 import type { ExhibitionSettings } from '../exhibition/types.ts';
+import { CardPreviewManager } from '../gallery/cardPreview.ts';
 import { popularityScore } from '../gallery/sort.ts';
 import { mountRenderer } from '../renderers/registry.ts';
 import { RendererSession } from '../renderers/session.ts';
@@ -12,12 +13,18 @@ interface ShowcaseViewOptions {
   getAssets(): AssetRecord[];
   getRenderable(assetId: string): RenderableAsset | undefined;
   getSettings(): ExhibitionSettings;
+  onClose(): void;
+  onModeChange(mode: ShowcaseSnapshot['mode']): void;
+  onPrevious(): void;
+  onNext(): void;
+  onSelectAsset(index: number): void;
 }
 
 const phaseNames = { title: '展覽開場', carousel: '作品輪播', overview: '全體作品', popular: '人氣精選' } as const;
 
 export function mountShowcaseView(options: ShowcaseViewOptions) {
   const session = new RendererSession();
+  const tilePreviews = new CardPreviewManager();
   let mountedAssetId: string | null = null;
   let renderGeneration = 0;
 
@@ -28,15 +35,37 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
     return element;
   };
 
-  const artworkTile = (asset: AssetRecord, index: number, prominent = false) => {
+  const artworkTile = (asset: AssetRecord, index: number, prominent = false, selectable = false) => {
     const tile = document.createElement('article');
     tile.className = `showcase-tile showcase-tile--${index % 5 + 1}${prominent ? ' showcase-tile--prominent' : ''}`;
     const visual = document.createElement('div');
     visual.className = 'showcase-tile-visual';
+    const renderable = options.getRenderable(asset.id);
+    if (renderable) {
+      tile.classList.add('has-preview');
+      const preview = document.createElement('div');
+      preview.className = 'work-preview-layer';
+      preview.setAttribute('aria-label', `${asset.title} 作品預覽`);
+      visual.append(preview);
+      tilePreviews.observe(preview, renderable);
+    }
     visual.append(text('span', '', String(asset.displayNumber ?? index + 1).padStart(2, '0')), text('small', '', asset.kind.toUpperCase()));
     const copy = document.createElement('div');
     copy.append(text('strong', '', asset.title), text('span', '', [asset.author, asset.category].filter(Boolean).join(' · ')));
     tile.append(visual, copy);
+    if (selectable) {
+      tile.classList.add('showcase-tile--selectable');
+      tile.tabIndex = 0;
+      tile.role = 'button';
+      tile.setAttribute('aria-label', `單獨展出 ${asset.title}`);
+      tile.addEventListener('click', () => options.onSelectAsset(index));
+      tile.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          options.onSelectAsset(index);
+        }
+      });
+    }
     return tile;
   };
 
@@ -67,7 +96,6 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
       }
       return;
     }
-    if (mountedAssetId === asset.id) return;
     mountedAssetId = asset.id;
     const generation = ++renderGeneration;
     await session.show(() => mountRenderer(media, renderable, status));
@@ -89,10 +117,64 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
     }
   };
 
+  const manualChrome = (snapshot: ShowcaseSnapshot, assets: AssetRecord[]) => {
+    const chrome = document.createElement('div');
+    chrome.className = 'showcase-chrome showcase-chrome--manual';
+    chrome.append(text('span', 'showcase-brand', 'CLASS3D / 正式展覽'));
+
+    const controls = document.createElement('div');
+    controls.className = 'showcase-controls';
+    const single = document.createElement('button');
+    single.type = 'button';
+    single.textContent = '單件展出';
+    single.dataset.active = String(snapshot.mode === 'single');
+    single.addEventListener('click', () => options.onModeChange('single'));
+    const multiple = document.createElement('button');
+    multiple.type = 'button';
+    multiple.textContent = '多件同展';
+    multiple.dataset.active = String(snapshot.mode === 'multiple');
+    multiple.addEventListener('click', () => options.onModeChange('multiple'));
+    const previous = document.createElement('button');
+    previous.type = 'button';
+    previous.textContent = snapshot.mode === 'single' ? '← 上一件' : '← 上一頁';
+    previous.disabled = snapshot.mode === 'multiple' && assets.length <= 12;
+    previous.addEventListener('click', options.onPrevious);
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.textContent = snapshot.mode === 'single' ? '下一件 →' : '下一頁 →';
+    next.disabled = snapshot.mode === 'multiple' && assets.length <= 12;
+    next.addEventListener('click', options.onNext);
+    controls.append(single, multiple, previous, next);
+
+    if (snapshot.mode === 'single') {
+      const select = document.createElement('select');
+      select.setAttribute('aria-label', '切換展出作品');
+      assets.forEach((asset, index) => {
+        const option = document.createElement('option');
+        option.value = String(index);
+        option.textContent = `${String(asset.displayNumber ?? index + 1).padStart(2, '0')} · ${asset.title}`;
+        option.selected = index === snapshot.assetIndex;
+        select.append(option);
+      });
+      select.addEventListener('change', () => options.onSelectAsset(Number(select.value)));
+      controls.append(select);
+    }
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'showcase-close';
+    close.textContent = '結束展覽 ×';
+    close.addEventListener('click', options.onClose);
+    controls.append(close);
+    chrome.append(controls);
+    return chrome;
+  };
+
   const render = (snapshot: ShowcaseSnapshot) => {
     const assets = options.getAssets();
     const settings = options.getSettings();
     const active = snapshot.active && assets.length > 0;
+    tilePreviews.clear();
     options.container.hidden = !active;
     options.container.setAttribute('aria-hidden', String(!active));
     document.body.dataset.showcaseActive = String(active);
@@ -106,15 +188,17 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
 
     const stage = document.createElement('div');
     const transition = showcaseTransition(snapshot.phase, prefersReducedShowcaseMotion());
-    stage.className = `showcase-stage showcase-stage--${snapshot.phase} transition-${transition}`;
+    stage.className = `showcase-stage showcase-stage--${snapshot.phase} transition-${transition}${snapshot.manual ? ' showcase-stage--manual' : ''}`;
     stage.style.setProperty('--showcase-duration', `${snapshot.durationMs}ms`);
-    const chrome = document.createElement('div');
-    chrome.className = 'showcase-chrome';
-    chrome.append(text('span', '', `CLASS3D / ${phaseNames[snapshot.phase as keyof typeof phaseNames]}`), text('span', '', '點擊、滾動或按鍵即退出'));
+    const chrome = snapshot.manual ? manualChrome(snapshot, assets) : document.createElement('div');
+    if (!snapshot.manual) {
+      chrome.className = 'showcase-chrome';
+      chrome.append(text('span', '', `CLASS3D / ${phaseNames[snapshot.phase as keyof typeof phaseNames]}`), text('span', '', '點擊、滾動或按鍵即退出'));
+    }
     const progress = document.createElement('div');
     progress.className = 'showcase-progress';
     progress.append(document.createElement('i'));
-    options.container.replaceChildren(chrome, stage, progress);
+    options.container.replaceChildren(chrome, stage, ...(snapshot.manual ? [] : [progress]));
 
     if (snapshot.phase === 'title') {
       mountedAssetId = null;
@@ -135,10 +219,15 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
       mountedAssetId = null;
       renderGeneration += 1;
       session.clear();
-      stage.append(text('p', 'showcase-kicker', `ALL WORKS / ${assets.length}`), text('h2', '', '全體作品'));
+      const pageStart = snapshot.manual ? Math.floor(snapshot.assetIndex / 12) * 12 : 0;
+      const visibleAssets = assets.slice(pageStart, pageStart + 12);
+      stage.append(
+        text('p', 'showcase-kicker', snapshot.manual ? `${pageStart + 1}–${Math.min(pageStart + visibleAssets.length, assets.length)} / ${assets.length}` : `ALL WORKS / ${assets.length}`),
+        text('h2', '', snapshot.manual ? '多件同展' : '全體作品')
+      );
       const grid = document.createElement('div');
       grid.className = 'showcase-overview-grid';
-      grid.append(...assets.slice(0, 12).map((asset, index) => artworkTile(asset, index)));
+      grid.append(...visibleAssets.map((asset, index) => artworkTile(asset, pageStart + index, false, snapshot.manual)));
       stage.append(grid);
     } else {
       mountedAssetId = null;
@@ -153,5 +242,5 @@ export function mountShowcaseView(options: ShowcaseViewOptions) {
     }
   };
 
-  return { render, destroy() { session.clear(); options.container.replaceChildren(); document.body.dataset.showcaseActive = 'false'; } };
+  return { render, destroy() { tilePreviews.clear(); session.clear(); options.container.replaceChildren(); document.body.dataset.showcaseActive = 'false'; } };
 }

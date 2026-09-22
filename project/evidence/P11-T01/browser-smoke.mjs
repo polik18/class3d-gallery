@@ -60,6 +60,11 @@ async function waitFor(expression, message, timeoutMs = 12_000) {
   throw new Error(`Timed out: ${message}; ${JSON.stringify(state)}; errors=${JSON.stringify(pageErrors)}`);
 }
 
+async function captureScreenshot(name) {
+  const capture = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+  await writeFile(path.join(evidenceDir, name), Buffer.from(capture.data, 'base64'));
+}
+
 async function play(title, selector, statusPattern = '') {
   await evaluate(`(() => {
     const card = [...document.querySelectorAll('.work-card')].find((item) => item.querySelector('h3')?.textContent === ${JSON.stringify(title)});
@@ -166,6 +171,29 @@ await verifyCardPreview('聲音日記', '.work-preview-layer audio');
 await verifyCardPreview('紙上故事', '.work-preview-layer iframe');
 await verifyCardPreview('三角星球', '.work-preview-layer canvas');
 
+await evaluate("document.querySelector('#start-exhibition').click()");
+await waitFor("document.querySelector('#start-exhibition-dialog').open", 'start exhibition choice');
+await evaluate("document.querySelector('[data-start-mode=multiple]').click()");
+await waitFor("document.querySelector('.showcase-stage--overview.showcase-stage--manual') && document.querySelectorAll('.showcase-tile--selectable').length === 5", 'multiple-work exhibition');
+await new Promise((resolve) => setTimeout(resolve, 250));
+await captureScreenshot('manual-multiple-exhibition.png');
+await evaluate("(() => { const tile = document.querySelectorAll('.showcase-tile--selectable')[1]; if (!tile) return false; try { tile.click(); } catch {} return true; })()");
+await waitFor("document.querySelector('.showcase-stage--carousel.showcase-stage--manual h2')?.textContent === '影像實驗'", 'select work from multiple exhibition');
+await new Promise((resolve) => setTimeout(resolve, 850));
+await captureScreenshot('manual-single-exhibition.png');
+await evaluate("[...document.querySelectorAll('.showcase-controls button')].find((button) => button.textContent.includes('下一件')).click()");
+await waitFor("document.querySelector('.showcase-stage--carousel h2')?.textContent === '聲音日記'", 'next work control');
+await evaluate(`(() => {
+  const select = document.querySelector('.showcase-controls select');
+  select.value = '4';
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+})()`);
+await waitFor("document.querySelector('.showcase-stage--carousel h2')?.textContent === '三角星球'", 'direct work selector');
+await evaluate("[...document.querySelectorAll('.showcase-controls button')].find((button) => button.textContent === '多件同展').click()");
+await waitFor("document.querySelector('.showcase-stage--overview.showcase-stage--manual')", 'switch back to multiple exhibition');
+await evaluate("document.querySelector('.showcase-close').click()");
+await waitFor("document.querySelector('#showcase-overlay').hidden", 'close manual exhibition');
+
 await play('光點', '.media-stage .native-renderer--image img');
 await play('影像實驗', '.media-stage video');
 await play('聲音日記', '.media-stage audio');
@@ -206,6 +234,7 @@ console.log(JSON.stringify({
   media: ['image', 'video', 'audio', 'pdf', 'model3d'],
   cards: 5,
   cardPreviews: ['image', 'video', 'audio', 'pdf', 'model3d'],
+  manualExhibition: { modes: ['single', 'multiple'], previousNext: true, directSelection: true },
   indexedDbSaveAndReload: true,
   archiveDownloaded: true,
   uploadRequests: uploadRequests.length,

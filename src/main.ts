@@ -71,7 +71,7 @@ app.innerHTML = `
     </a>
     <div class="topbar-actions">
       <span class="topbar-exhibition-title" id="topbar-exhibition-title">我的多媒體展覽</span>
-      <button class="settings-button" id="start-showcase" type="button">展示預覽</button>
+      <button class="settings-button exhibition-start-button" id="start-exhibition" type="button">開始展覽</button>
       <button class="settings-button" id="open-settings" type="button">展覽設定</button>
       <div class="user-chip"><span class="online-dot"></span>${user.name} · ${user.role === 'teacher' ? '教師模式' : '學生模式'}</div>
     </div>
@@ -177,10 +177,21 @@ app.innerHTML = `
   <dialog class="settings-dialog" id="settings-dialog" aria-label="展覽設定">
     <div id="settings-view"></div>
   </dialog>
+  <dialog class="start-exhibition-dialog" id="start-exhibition-dialog" aria-labelledby="start-exhibition-title">
+    <div class="start-exhibition-panel">
+      <div><p>START EXHIBITION</p><h2 id="start-exhibition-title">選擇展覽方式</h2></div>
+      <p>展覽開始後仍可隨時切換模式與作品。</p>
+      <div class="start-exhibition-options">
+        <button data-start-mode="single" type="button"><strong>單件展出</strong><span>一次專注一件作品，可上一件、下一件或從清單切換。</span></button>
+        <button data-start-mode="multiple" type="button"><strong>多件同展</strong><span>同畫面展出多件作品，可翻頁，也可點選作品進入單件展出。</span></button>
+      </div>
+      <button class="start-exhibition-cancel" type="button">取消</button>
+    </div>
+  </dialog>
   <dialog class="engagement-dialog" id="engagement-dialog" aria-label="作品按讚與留言"></dialog>
-  <section class="showcase-overlay" id="showcase-overlay" aria-label="自動展示" aria-hidden="true" hidden></section>
+  <section class="showcase-overlay" id="showcase-overlay" aria-label="展覽播放" aria-hidden="true" hidden></section>
 
-  <footer><span>Class3D Gallery v1.2</span><span>Architecture Preview · Local Data</span></footer>
+  <footer><span>Class3D Gallery v1.2</span><span>Browser-local Exhibition · Local Data</span></footer>
 `;
 
 const mediaStage = document.querySelector<HTMLElement>('#media-stage');
@@ -207,7 +218,8 @@ const worksTitle = document.querySelector<HTMLElement>('#works-title');
 const settingsDialog = document.querySelector<HTMLDialogElement>('#settings-dialog');
 const settingsViewContainer = document.querySelector<HTMLElement>('#settings-view');
 const openSettingsButton = document.querySelector<HTMLButtonElement>('#open-settings');
-const startShowcaseButton = document.querySelector<HTMLButtonElement>('#start-showcase');
+const startExhibitionButton = document.querySelector<HTMLButtonElement>('#start-exhibition');
+const startExhibitionDialog = document.querySelector<HTMLDialogElement>('#start-exhibition-dialog');
 const engagementDialog = document.querySelector<HTMLDialogElement>('#engagement-dialog');
 const showcaseOverlay = document.querySelector<HTMLElement>('#showcase-overlay');
 const saveLocalGalleryButton = document.querySelector<HTMLButtonElement>('#save-local-gallery');
@@ -529,23 +541,41 @@ galleryCategory?.addEventListener('change', () => gallery.setCategory(galleryCat
 gallery.subscribe(renderGallery);
 
 if (showcaseOverlay) {
+  idleShowcase = new IdleShowcaseController(activeExhibitionSettings.autoShowcase);
   const showcaseView = mountShowcaseView({
     container: showcaseOverlay,
     getAssets: () => gallery.getAssets(),
     getRenderable: (assetId) => renderables.get(assetId),
-    getSettings: () => activeExhibitionSettings
+    getSettings: () => activeExhibitionSettings,
+    onClose: () => idleShowcase?.stopExhibition(),
+    onModeChange: (mode) => idleShowcase?.setExhibitionMode(mode),
+    onPrevious: () => idleShowcase?.showPrevious(),
+    onNext: () => idleShowcase?.showNext(),
+    onSelectAsset: (index) => idleShowcase?.showAsset(index)
   });
-  idleShowcase = new IdleShowcaseController(activeExhibitionSettings.autoShowcase);
   idleShowcase.setAssets(gallery.getAssets());
   idleShowcase.subscribe((snapshot) => {
-    if (snapshot.active && snapshot.phase === 'carousel') {
+    if (snapshot.active && !snapshot.manual && snapshot.phase === 'carousel') {
       const asset = gallery.getAssets()[snapshot.assetIndex % gallery.getAssets().length];
       if (asset) engagement.recordView(asset.id, 'automatic');
     }
     showcaseView.render(snapshot);
   });
   idleShowcase.attachActivity(document);
-  startShowcaseButton?.addEventListener('click', () => idleShowcase?.startNow());
+  startExhibitionButton?.addEventListener('click', () => startExhibitionDialog?.showModal());
+  startExhibitionDialog?.querySelectorAll<HTMLButtonElement>('[data-start-mode]').forEach((button) => {
+    button.addEventListener('click', () => {
+      startExhibitionDialog.close();
+      idleShowcase?.startExhibition(button.dataset.startMode === 'multiple' ? 'multiple' : 'single');
+    });
+  });
+  startExhibitionDialog?.querySelector<HTMLButtonElement>('.start-exhibition-cancel')?.addEventListener('click', () => startExhibitionDialog.close());
+  startExhibitionDialog?.addEventListener('click', (event) => {
+    if (event.target === startExhibitionDialog) startExhibitionDialog.close();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && idleShowcase?.getState().manual) idleShowcase.stopExhibition();
+  });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) idleShowcase?.suspend();
     else idleShowcase?.resume();

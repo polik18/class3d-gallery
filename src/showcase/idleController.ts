@@ -8,7 +8,9 @@ export interface ShowcaseSnapshot {
   assetIndex: number;
   cycle: number;
   durationMs: number;
-  reason: 'idle' | 'preview' | 'activity' | 'disabled' | 'suspended' | 'timer';
+  manual: boolean;
+  mode: 'single' | 'multiple';
+  reason: 'idle' | 'manual' | 'activity' | 'disabled' | 'suspended' | 'timer';
 }
 
 export interface ShowcaseScheduler {
@@ -28,7 +30,7 @@ export class IdleShowcaseController {
   private assets: AssetRecord[] = [];
   private readonly scheduler: ShowcaseScheduler;
   private timer: unknown | null = null;
-  private snapshot: ShowcaseSnapshot = { active: false, phase: 'inactive', assetIndex: 0, cycle: 0, durationMs: 0, reason: 'disabled' };
+  private snapshot: ShowcaseSnapshot = { active: false, phase: 'inactive', assetIndex: 0, cycle: 0, durationMs: 0, manual: false, mode: 'single', reason: 'disabled' };
   private listeners = new Set<(snapshot: Readonly<ShowcaseSnapshot>) => void>();
   private carouselElapsedMs = 0;
   private suspended = false;
@@ -73,7 +75,7 @@ export class IdleShowcaseController {
   private armIdle() {
     this.clearTimer();
     if (!this.canRun() || this.snapshot.active) return;
-    this.schedule(() => this.begin('idle'), this.settings.idleDelayMs);
+    this.schedule(() => this.begin(), this.settings.idleDelayMs);
   }
 
   private setPhase(phase: Exclude<ShowcasePhase, 'inactive'>, durationMs: number, reason: ShowcaseSnapshot['reason']) {
@@ -82,15 +84,15 @@ export class IdleShowcaseController {
     this.schedule(() => this.advance(), durationMs);
   }
 
-  private begin(reason: 'idle' | 'preview') {
+  private begin() {
     if (!this.canRun()) return;
     this.carouselElapsedMs = 0;
-    this.snapshot = { ...this.snapshot, assetIndex: 0 };
-    this.setPhase('title', this.settings.titleDurationMs, reason);
+    this.snapshot = { ...this.snapshot, assetIndex: 0, manual: false, mode: 'single' };
+    this.setPhase('title', this.settings.titleDurationMs, 'idle');
   }
 
   private advance() {
-    if (!this.snapshot.active || !this.canRun()) return;
+    if (!this.snapshot.active || this.snapshot.manual || !this.canRun()) return;
     if (this.snapshot.phase === 'title') {
       this.carouselElapsedMs = 0;
       const duration = Math.min(showcaseAssetDuration(this.assets[0], this.settings), this.settings.carouselDurationMs);
@@ -131,24 +133,76 @@ export class IdleShowcaseController {
 
   configure(settings: AutoShowcaseSettings) {
     this.settings = { ...settings };
-    if (!settings.enabled) this.deactivate('disabled', false);
+    if (!settings.enabled && !this.snapshot.manual) this.deactivate('disabled', false);
     else if (!this.snapshot.active) this.armIdle();
   }
 
-  startNow() {
-    this.begin('preview');
+  startAutomaticNow() {
+    this.begin();
+  }
+
+  startExhibition(mode: ShowcaseSnapshot['mode'] = 'single') {
+    if (this.suspended || this.assets.length === 0) return;
+    this.clearTimer();
+    const assetIndex = mode === 'multiple' ? Math.floor(this.snapshot.assetIndex / 12) * 12 : this.snapshot.assetIndex;
+    this.snapshot = {
+      ...this.snapshot,
+      active: true,
+      phase: mode === 'single' ? 'carousel' : 'overview',
+      assetIndex,
+      durationMs: 0,
+      manual: true,
+      mode,
+      reason: 'manual'
+    };
+    this.emit();
+  }
+
+  setExhibitionMode(mode: ShowcaseSnapshot['mode']) {
+    if (!this.snapshot.active || !this.snapshot.manual || this.snapshot.mode === mode) return;
+    this.startExhibition(mode);
+  }
+
+  showNext() {
+    if (!this.snapshot.active || !this.snapshot.manual || this.assets.length === 0) return;
+    const assetIndex = this.snapshot.mode === 'multiple'
+      ? ((Math.floor(this.snapshot.assetIndex / 12) + 1) % Math.ceil(this.assets.length / 12)) * 12
+      : (this.snapshot.assetIndex + 1) % this.assets.length;
+    this.snapshot = { ...this.snapshot, assetIndex };
+    this.emit();
+  }
+
+  showPrevious() {
+    if (!this.snapshot.active || !this.snapshot.manual || this.assets.length === 0) return;
+    const pageCount = Math.ceil(this.assets.length / 12);
+    const assetIndex = this.snapshot.mode === 'multiple'
+      ? ((Math.floor(this.snapshot.assetIndex / 12) - 1 + pageCount) % pageCount) * 12
+      : (this.snapshot.assetIndex - 1 + this.assets.length) % this.assets.length;
+    this.snapshot = { ...this.snapshot, assetIndex };
+    this.emit();
+  }
+
+  showAsset(assetIndex: number) {
+    if (!this.snapshot.active || !this.snapshot.manual || this.assets.length === 0) return;
+    const normalized = Math.max(0, Math.min(this.assets.length - 1, Math.trunc(assetIndex)));
+    this.snapshot = { ...this.snapshot, phase: 'carousel', assetIndex: normalized, mode: 'single' };
+    this.emit();
+  }
+
+  stopExhibition() {
+    if (this.snapshot.manual) this.deactivate('manual', true);
   }
 
   private deactivate(reason: ShowcaseSnapshot['reason'], rearm: boolean) {
     this.clearTimer();
     const wasActive = this.snapshot.active;
-    this.snapshot = { ...this.snapshot, active: false, phase: 'inactive', durationMs: 0, reason };
+    this.snapshot = { ...this.snapshot, active: false, phase: 'inactive', durationMs: 0, manual: false, reason };
     if (wasActive) this.emit();
     if (rearm) this.armIdle();
   }
 
   recordActivity() {
-    if (this.suspended) return;
+    if (this.suspended || this.snapshot.manual) return;
     this.deactivate('activity', true);
   }
 

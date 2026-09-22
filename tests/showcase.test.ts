@@ -64,7 +64,7 @@ test('cycles through title, timed artwork carousel, overview and popular phases'
   const scheduler = new FakeScheduler();
   const controller = new IdleShowcaseController(settings, scheduler);
   controller.setAssets([asset('image'), asset('model', 'model3d'), asset('video', 'video')]);
-  controller.startNow();
+  controller.startAutomaticNow();
   assert.equal(controller.getState().phase, 'title');
   scheduler.advance(settings.titleDurationMs);
   assert.deepEqual({ phase: controller.getState().phase, index: controller.getState().assetIndex }, { phase: 'carousel', index: 0 });
@@ -92,6 +92,47 @@ test('disabled or suspended showcase never starts until re-enabled and resumed',
   controller.resume();
   scheduler.advance(DEFAULT_AUTO_SHOWCASE.idleDelayMs);
   assert.equal(controller.getState().active, true);
+});
+
+test('manual exhibition switches between single work, multiple works and direct selection', () => {
+  const { controller } = fixture();
+  controller.startExhibition('single');
+  assert.deepEqual(
+    { active: controller.getState().active, phase: controller.getState().phase, manual: controller.getState().manual, mode: controller.getState().mode },
+    { active: true, phase: 'carousel', manual: true, mode: 'single' }
+  );
+  controller.showNext();
+  assert.equal(controller.getState().assetIndex, 1);
+  controller.showPrevious();
+  assert.equal(controller.getState().assetIndex, 0);
+  controller.setExhibitionMode('multiple');
+  assert.deepEqual({ phase: controller.getState().phase, mode: controller.getState().mode }, { phase: 'overview', mode: 'multiple' });
+  controller.showAsset(2);
+  assert.deepEqual({ phase: controller.getState().phase, mode: controller.getState().mode, index: controller.getState().assetIndex }, { phase: 'carousel', mode: 'single', index: 2 });
+});
+
+test('manual exhibition stays open during interaction and closes explicitly', () => {
+  const { controller } = fixture();
+  controller.configure({ ...DEFAULT_AUTO_SHOWCASE, enabled: false });
+  controller.startExhibition('multiple');
+  controller.recordActivity();
+  assert.equal(controller.getState().active, true);
+  controller.stopExhibition();
+  assert.deepEqual({ active: controller.getState().active, manual: controller.getState().manual }, { active: false, manual: false });
+});
+
+test('multiple-work exhibition pages through more than twelve works', () => {
+  const controller = new IdleShowcaseController({ ...DEFAULT_AUTO_SHOWCASE }, new FakeScheduler());
+  controller.setAssets(Array.from({ length: 25 }, (_, index) => asset(`work-${index + 1}`)));
+  controller.startExhibition('multiple');
+  controller.showNext();
+  assert.equal(controller.getState().assetIndex, 12);
+  controller.showNext();
+  assert.equal(controller.getState().assetIndex, 24);
+  controller.showNext();
+  assert.equal(controller.getState().assetIndex, 0);
+  controller.showPrevious();
+  assert.equal(controller.getState().assetIndex, 24);
 });
 
 test('transition and asset timing helpers respect media type and reduced motion', () => {
