@@ -1,31 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 36,
+  "revision": 37,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P09",
-  "current_task": "P09-T01",
-  "status": "VERIFYING",
-  "progress_percent": 86,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T09:09:07.511Z",
-  "updated_at": "2026-09-22T09:24:43.829Z",
+  "current_phase": "P10",
+  "current_task": "P10-T01",
+  "status": "PENDING",
+  "progress_percent": 92,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T09:25:02.955Z",
   "base_commit": "5387ac72868a5cae7c70b30f88fb40ddb47a47d1",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T09:09:07.511Z",
-    "heartbeat_at": "2026-09-22T09:24:43.829Z",
-    "expires_at": "2026-09-22T09:54:43.829Z"
-  },
-  "expected_files": [
-    "src/showcase/idleController.ts",
-    "src/showcase/transitions.ts",
-    "src/showcase/view.ts",
-    "tests/showcase.test.ts",
-    "project/evidence/P09-T01/"
-  ],
+  "delivery_commit": "8cf41776d68ff41c6c624c3d809f797c6d6ee178",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "f2bf9037a00f3d6a713604d163d91057539b7f86",
     "commands": [
@@ -43,7 +32,7 @@
       "project/evidence/P09-T01/auto-overview.png"
     ]
   },
-  "next_step": "提交 P09 自動展示與瀏覽器證據，推送後執行 task:finish 驗收",
+  "next_step": "執行 npm run task:start -- P10-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -55,7 +44,7 @@
     "P06-T01": "ACCEPTED",
     "P07-T01": "ACCEPTED",
     "P08-T01": "ACCEPTED",
-    "P09-T01": "VERIFYING",
+    "P09-T01": "ACCEPTED",
     "P10-T01": "PENDING",
     "P11-T01": "PENDING"
   }

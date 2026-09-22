@@ -35,3 +35,4 @@
 {"schema":"class3d-project-event-v1","revision":34,"event":"TASK_STARTED","task":"P09-T01","status":"IN_PROGRESS","at":"2026-09-22T09:09:07.511Z","detail":"P09-T01 started by huangjianzhe"}
 {"schema":"class3d-project-event-v1","revision":35,"event":"TASK_CHECKPOINTED","task":"P09-T01","status":"IN_PROGRESS","at":"2026-09-22T09:19:35.951Z","detail":"以 Chrome 驗證閒置進入、四階段循環、人工立即退出、減少動態與自動展示不增加人氣"}
 {"schema":"class3d-project-event-v1","revision":36,"event":"TASK_CHECKPOINTED","task":"P09-T01","status":"VERIFYING","at":"2026-09-22T09:24:43.829Z","detail":"提交 P09 自動展示與瀏覽器證據，推送後執行 task:finish 驗收"}
+{"schema":"class3d-project-event-v1","revision":37,"event":"TASK_ACCEPTED","task":"P10-T01","status":"PENDING","at":"2026-09-22T09:25:02.955Z","detail":"P09-T01 accepted at 8cf41776d68ff41c6c624c3d809f797c6d6ee178"}
