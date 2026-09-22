@@ -19,3 +19,4 @@
 {"schema":"class3d-project-event-v1","revision":18,"event":"TASK_STARTED","task":"P05-T01","status":"IN_PROGRESS","at":"2026-09-22T04:48:33.470Z","detail":"P05-T01 started by huangjianzhe"}
 {"schema":"class3d-project-event-v1","revision":19,"event":"TASK_CHECKPOINTED","task":"P05-T01","status":"IN_PROGRESS","at":"2026-09-22T05:03:17.944Z","detail":"以 Chrome 依序驗證圖片、影片、音訊、PDF、嵌入式 GLTF，確認切換釋放 Object URL 與 3D 操作"}
 {"schema":"class3d-project-event-v1","revision":20,"event":"TASK_CHECKPOINTED","task":"P05-T01","status":"VERIFYING","at":"2026-09-22T05:11:03.717Z","detail":"提交 P05 最終修正與驗證證據，推送後以 delivery commit 驗收"}
+{"schema":"class3d-project-event-v1","revision":21,"event":"TASK_ACCEPTED","task":"P06-T01","status":"PENDING","at":"2026-09-22T05:11:34.839Z","detail":"P05-T01 accepted at 0312842c3dffefdb8f7cc1ca75f0cfdd74d175f0"}

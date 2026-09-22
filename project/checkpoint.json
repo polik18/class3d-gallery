@@ -1,36 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 20,
+  "revision": 21,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P05",
-  "current_task": "P05-T01",
-  "status": "VERIFYING",
-  "progress_percent": 44,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T04:48:33.470Z",
-  "updated_at": "2026-09-22T05:11:03.717Z",
+  "current_phase": "P06",
+  "current_task": "P06-T01",
+  "status": "PENDING",
+  "progress_percent": 60,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T05:11:34.839Z",
   "base_commit": "5b5dae7f85faa832bf3949569298454cf39614dd",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T04:48:33.470Z",
-    "heartbeat_at": "2026-09-22T05:11:03.717Z",
-    "expires_at": "2026-09-22T05:41:03.717Z"
-  },
-  "expected_files": [
-    "src/renderers/",
-    "src/exhibition/modelViewer.ts",
-    "src/renderers/types.ts",
-    "src/renderers/objectUrls.ts",
-    "src/renderers/session.ts",
-    "src/renderers/native.ts",
-    "src/renderers/model3d.ts",
-    "src/renderers/registry.ts",
-    "src/renderers/mediaViewer.ts",
-    "tests/renderers.test.ts"
-  ],
+  "delivery_commit": "0312842c3dffefdb8f7cc1ca75f0cfdd74d175f0",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "e312bea030cc6ee8ce139adf36038bfe9cbcd6ce",
     "commands": [
@@ -47,7 +31,7 @@
       "project/evidence/P05-T01/multimedia-stage.png"
     ]
   },
-  "next_step": "提交 P05 最終修正與驗證證據，推送後以 delivery commit 驗收",
+  "next_step": "執行 npm run task:start -- P06-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -55,7 +39,7 @@
     "P02-T01": "ACCEPTED",
     "P03-T01": "ACCEPTED",
     "P04-T01": "ACCEPTED",
-    "P05-T01": "VERIFYING",
+    "P05-T01": "ACCEPTED",
     "P06-T01": "PENDING",
     "P07-T01": "PENDING",
     "P08-T01": "PENDING",
