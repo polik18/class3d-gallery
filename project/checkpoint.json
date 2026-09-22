@@ -1,24 +1,19 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 44,
+  "revision": 45,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P11",
   "current_task": "P11-T01",
-  "status": "VERIFYING",
-  "progress_percent": 97,
-  "owner": "huangjianzhe",
+  "status": "ACCEPTED",
+  "progress_percent": 100,
+  "owner": null,
   "started_at": "2026-09-22T09:33:27.550Z",
-  "updated_at": "2026-09-22T09:48:50.881Z",
+  "updated_at": "2026-09-22T09:49:11.202Z",
   "base_commit": "2afe2bc76933729f6f929d011b3860e4c768a8e9",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T09:33:27.550Z",
-    "heartbeat_at": "2026-09-22T09:48:50.881Z",
-    "expires_at": "2026-09-22T10:18:50.881Z"
-  },
+  "delivery_commit": "1a0a177f24ec08dd6560bf62c0020a3905e258a5",
+  "lease": null,
   "expected_files": [
     "README.md",
     "project/evidence/P11-T01/",
@@ -45,7 +40,7 @@
       "project/evidence/P11-T01/class3d-gallery.c3dg"
     ]
   },
-  "next_step": "提交 P11 線上驗收證據，執行 task:finish，將最終 checkpoint 快轉至 main 並確認 Pages",
+  "next_step": "所有計畫任務已完成；執行最終發布確認",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -59,6 +54,6 @@
     "P08-T01": "ACCEPTED",
     "P09-T01": "ACCEPTED",
     "P10-T01": "ACCEPTED",
-    "P11-T01": "VERIFYING"
+    "P11-T01": "ACCEPTED"
   }
 }
