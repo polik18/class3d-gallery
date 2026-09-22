@@ -1,31 +1,20 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 32,
+  "revision": 33,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
-  "current_phase": "P08",
-  "current_task": "P08-T01",
-  "status": "VERIFYING",
-  "progress_percent": 78,
-  "owner": "huangjianzhe",
-  "started_at": "2026-09-22T08:51:13.455Z",
-  "updated_at": "2026-09-22T09:08:08.700Z",
+  "current_phase": "P09",
+  "current_task": "P09-T01",
+  "status": "PENDING",
+  "progress_percent": 86,
+  "owner": null,
+  "started_at": null,
+  "updated_at": "2026-09-22T09:08:33.813Z",
   "base_commit": "1f665d5fd8adf6c97f2e88990db882e3a0cbce74",
-  "delivery_commit": null,
-  "lease": {
-    "owner": "huangjianzhe",
-    "acquired_at": "2026-09-22T08:51:13.455Z",
-    "heartbeat_at": "2026-09-22T09:08:08.700Z",
-    "expires_at": "2026-09-22T09:38:08.700Z"
-  },
-  "expected_files": [
-    "src/engagement/",
-    "src/storage/engagement.ts",
-    "src/engagement/view.ts",
-    "tests/engagement.test.ts",
-    "project/evidence/P08-T01/"
-  ],
+  "delivery_commit": "fe8d6255f835180df4ae726aafee3f248d787cd6",
+  "lease": null,
+  "expected_files": [],
   "last_verified": {
     "commit": "576d4c69be36589d6c0136cda9b4072b7d3e816a",
     "commands": [
@@ -45,7 +34,7 @@
       "project/evidence/P08-T01/class3d-comments.csv"
     ]
   },
-  "next_step": "提交 P08 功能與瀏覽器證據，推送後執行 task:finish 驗收",
+  "next_step": "執行 npm run task:start -- P09-T01",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -56,7 +45,7 @@
     "P05-T01": "ACCEPTED",
     "P06-T01": "ACCEPTED",
     "P07-T01": "ACCEPTED",
-    "P08-T01": "VERIFYING",
+    "P08-T01": "ACCEPTED",
     "P09-T01": "PENDING",
     "P10-T01": "PENDING",
     "P11-T01": "PENDING"
