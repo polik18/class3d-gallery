@@ -52,6 +52,11 @@ export function sortAssets(assets: readonly AssetRecord[], sort: AssetSort) {
           compared = Number(leftMissing) - Number(rightMissing);
           if (!compared && !leftMissing) compared = (leftNumber - rightNumber) * direction;
         }
+      } else if (sort.key === 'manual') {
+        const leftMissing = left.asset.manualOrder === undefined;
+        const rightMissing = right.asset.manualOrder === undefined;
+        compared = Number(leftMissing) - Number(rightMissing);
+        if (!compared && !leftMissing) compared = ((left.asset.manualOrder ?? 0) - (right.asset.manualOrder ?? 0)) * direction;
       } else {
         compared = compareAscending(left.asset, right.asset, sort) * direction;
       }

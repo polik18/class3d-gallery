@@ -39,6 +39,13 @@ test('structured filename yields seat number, title, author and description', ()
   });
 });
 
+test('Chinese sequence prefix is parsed as a sequence number', () => {
+  const parsed = parseArtworkFileName('序號０４__作品說明__李同學.pdf');
+  assert.equal(parsed.displayNumber, 4);
+  assert.equal(parsed.numberType, 'sequence');
+  assert.equal(parsed.title, '作品說明');
+});
+
 test('plain filename becomes both title and description', () => {
   const parsed = parseArtworkFileName('我的_聲音_作品.mp3');
   assert.equal(parsed.title, '我的 聲音 作品');

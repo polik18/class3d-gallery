@@ -30,6 +30,7 @@ test('category and title sorting uses natural Traditional Chinese comparison', (
 test('import time and manual order can be sorted independently', () => {
   assert.deepEqual(sortAssets(fixtures(), { key: 'importedAt', direction: 'descending' }).map((item) => item.id), ['a4', 'a1', 'a3', 'a2']);
   assert.deepEqual(sortAssets(fixtures(), { key: 'manual', direction: 'ascending' }).map((item) => item.id), ['a3', 'a1', 'a2', 'a4']);
+  assert.deepEqual(sortAssets(fixtures(), { key: 'manual', direction: 'descending' }).map((item) => item.id), ['a2', 'a1', 'a3', 'a4']);
 });
 
 test('popularity score includes likes, approved comments, views, interactions and dwell time', () => {

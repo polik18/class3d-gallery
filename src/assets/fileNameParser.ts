@@ -24,7 +24,7 @@ export function parseArtworkFileName(fileName: string): ParsedFileName {
   let numberType: NumberType | undefined;
 
   const seatMatch = remainder.match(/^座號\s*([０-９\d]+)[_\-\s]*/u);
-  const numberedMatch = remainder.match(/^(?:no\.?\s*)?([０-９\d]+)[_\-\s]+/iu);
+  const numberedMatch = remainder.match(/^(?:(?:序號|編號|no\.?)\s*)?([０-９\d]+)[_\-\s]+/iu);
   const prefix = seatMatch ?? numberedMatch;
   if (prefix) {
     const normalizedNumber = prefix[1].replace(/[０-９]/g, (character) => String(character.charCodeAt(0) - 0xff10));

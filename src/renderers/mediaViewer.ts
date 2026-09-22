@@ -89,7 +89,7 @@ export function mountMediaViewer({ container, shell, input, status, onImport }: 
       if (invalid?.missingDependencies.length) throw new Error(`缺少 GLTF 相依檔：${invalid.missingDependencies.join('、')}`);
       if (invalid?.externalDependencies.length) throw new Error('GLTF 含有外部網址資源；本展覽不連線下載');
       const importedAt = Date.now();
-      const imported = supported.map((bundle, index) => toImportedMediaAsset(bundle, index, importedAt));
+      const imported = supported.map((bundle, index) => toImportedMediaAsset(bundle, index, importedAt + index));
       onImport?.(imported);
       const asset = imported[0].renderable;
       await session.show(() => mountRenderer(container, asset, status));

@@ -1,0 +1,47 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P06-T01",
+  "verified_at": "2026-09-22T13:39:31+08:00",
+  "base_commit": "01eeebc004d58b1e737d186e3ebcba6027cbb8e8",
+  "result": "PASS",
+  "commands": [
+    { "command": "npm test", "exit_code": 0, "summary": "50 tests passed, including 8 gallery mode and sorting tests" },
+    { "command": "npm run check", "exit_code": 0, "summary": "TypeScript strict check passed" },
+    { "command": "npm run build", "exit_code": 0, "summary": "Vite production build passed; 3D bundle remains isolated and loads on demand" },
+    { "command": "npm run project:validate", "exit_code": 0, "summary": "Project checkpoint and manifest remain consistent" },
+    { "command": "git diff --check", "exit_code": 0, "summary": "No whitespace errors" },
+    { "command": "Chrome headless gallery modes smoke test", "exit_code": 0, "summary": "Imported five mixed works and exercised all, category, selection and solo modes plus number and import-time sorting" },
+    { "command": "Chrome headless 390px responsive smoke test", "exit_code": 0, "summary": "No horizontal overflow; all four mode controls and gallery cards remained available" }
+  ],
+  "browser_smoke": {
+    "browser": "Google Chrome headless",
+    "imported_assets": 5,
+    "all_mode_count": 5,
+    "category_mode_count": 1,
+    "selection_mode_count": 2,
+    "solo_mode_count": 1,
+    "seat_order": ["聲音", "短片", "海洋", "三角模型", "說明"],
+    "sequence_first": "說明",
+    "newest_import_first": "三角模型",
+    "imported_model_replayed": true,
+    "mobile_viewport_width": 390,
+    "mobile_horizontal_overflow": false,
+    "page_errors": [],
+    "http_errors": [],
+    "screenshot": "project/evidence/P06-T01/gallery-modes.png"
+  },
+  "acceptance": {
+    "all_exhibition": true,
+    "category_exhibition": true,
+    "selection_exhibition": true,
+    "solo_exhibition": true,
+    "seat_and_sequence_sort": true,
+    "category_sort": true,
+    "import_time_sort": true,
+    "popularity_sort": true,
+    "manual_sort": true,
+    "title_sort": true,
+    "batch_import_creates_gallery_cards": true,
+    "server_uploads": false
+  }
+}

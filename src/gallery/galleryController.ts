@@ -21,6 +21,7 @@ export class GalleryController {
     if (this.state.focusedAssetId && !ids.has(this.state.focusedAssetId)) this.state.focusedAssetId = undefined;
     const categories = this.getCategories();
     if (this.state.category && !categories.includes(this.state.category)) this.state.category = undefined;
+    if (this.state.mode === 'category' && !this.state.category) this.state.category = categories[0];
   }
 
   private emit() {
