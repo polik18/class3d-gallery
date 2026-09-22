@@ -12,6 +12,7 @@ import { EngagementController } from './engagement/controller';
 import { getVisitorSession, startNewVisitorSession } from './engagement/session';
 import { mountEngagementView } from './engagement/view';
 import { GalleryController } from './gallery/galleryController';
+import { CardPreviewManager } from './gallery/cardPreview';
 import { popularityScore } from './gallery/sort';
 import { generateArtworkURL } from './qrcode/share';
 import { mountMediaViewer, type ImportedMediaAsset } from './renderers/mediaViewer';
@@ -220,6 +221,7 @@ const engagement = new EngagementController();
 const exhibitionSettingsStore = new ExhibitionSettingsStore();
 const galleryStorage = new GalleryStorage();
 const renderables = new Map<string, RenderableAsset>();
+const cardPreviews = new CardPreviewManager();
 let importedOnce = false;
 let mediaViewer: ReturnType<typeof mountMediaViewer> | null = null;
 let engagementView: ReturnType<typeof mountEngagementView> | null = null;
@@ -271,6 +273,15 @@ function cardForAsset(asset: AssetRecord, index: number, selected: boolean) {
   article.dataset.assetId = asset.id;
   const visual = document.createElement('div');
   visual.className = 'work-visual';
+  const renderable = renderables.get(asset.id);
+  if (renderable) {
+    article.classList.add('has-preview');
+    const previewLayer = document.createElement('div');
+    previewLayer.className = 'work-preview-layer';
+    previewLayer.setAttribute('aria-label', `${asset.title} 作品預覽`);
+    visual.append(previewLayer);
+    cardPreviews.observe(previewLayer, renderable);
+  }
   const number = document.createElement('span');
   number.textContent = asset.displayNumber ? String(asset.displayNumber).padStart(2, '0') : '—';
   const category = document.createElement('strong');
@@ -326,7 +337,6 @@ function cardForAsset(asset: AssetRecord, index: number, selected: boolean) {
     gallery.focusAsset(asset.id);
   });
   actions.append(like, comments, choose, solo);
-  const renderable = renderables.get(asset.id);
   if (renderable) {
     const preview = document.createElement('button');
     preview.type = 'button';
@@ -362,6 +372,7 @@ function cardForAsset(asset: AssetRecord, index: number, selected: boolean) {
 
 function renderGallery() {
   if (!workGrid || !galleryEmpty || !galleryCount) return;
+  cardPreviews.clear();
   const state = gallery.getState();
   const visible = gallery.getVisibleAssets();
   const selected = new Set(state.selectedAssetIds);

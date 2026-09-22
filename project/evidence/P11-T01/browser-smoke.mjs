@@ -69,6 +69,15 @@ async function play(title, selector, statusPattern = '') {
   await waitFor(`document.querySelector(${JSON.stringify(selector)})${statusPattern ? ` && ${statusPattern}` : ''}`, `renderer for ${title}`);
 }
 
+async function verifyCardPreview(title, selector) {
+  await evaluate(`(() => {
+    const card = [...document.querySelectorAll('.work-card')].find((item) => item.querySelector('h3')?.textContent === ${JSON.stringify(title)});
+    if (!card) throw new Error('Missing card: ' + ${JSON.stringify(title)});
+    card.scrollIntoView({ block: 'center' });
+  })()`);
+  await waitFor(`[...document.querySelectorAll('.work-card')].some((item) => item.querySelector('h3')?.textContent === ${JSON.stringify(title)} && item.querySelector(${JSON.stringify(selector)}))`, `card preview for ${title}`);
+}
+
 await send('Page.enable');
 await send('Runtime.enable');
 await send('Network.enable');
@@ -103,7 +112,7 @@ requests.length = 0;
 
 await evaluate(`(() => {
   const fromBase64 = (value) => Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
-  const image = fromBase64('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=');
+  const image = '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="800" viewBox="0 0 640 800"><defs><radialGradient id="g"><stop stop-color="#ffe29a"/><stop offset="1" stop-color="#ef5a3c"/></radialGradient></defs><rect width="640" height="800" fill="#172523"/><circle cx="320" cy="360" r="220" fill="url(#g)"/><circle cx="320" cy="360" r="82" fill="#fff4d1"/><text x="320" y="690" fill="white" font-size="42" text-anchor="middle">LIGHT STUDY</text></svg>';
   const wav = new Uint8Array(44);
   const wavView = new DataView(wav.buffer);
   ['RIFF', 'WAVE', 'fmt ', 'data'].forEach((word, group) => {
@@ -125,17 +134,37 @@ await evaluate(`(() => {
     bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: positionBytes.byteLength }],
     buffers: [{ byteLength: positionBytes.byteLength, uri: 'data:application/octet-stream;base64,' + positionBase64 }]
   });
+  const pdfContent = 'BT /F1 20 Tf 42 220 Td (Class3D PDF Preview) Tj ET\\n';
+  const pdfObjects = [
+    '1 0 obj\\n<< /Type /Catalog /Pages 2 0 R >>\\nendobj\\n',
+    '2 0 obj\\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\\nendobj\\n',
+    '3 0 obj\\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 400] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>\\nendobj\\n',
+    '4 0 obj\\n<< /Length ' + pdfContent.length + ' >>\\nstream\\n' + pdfContent + 'endstream\\nendobj\\n',
+    '5 0 obj\\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\\nendobj\\n'
+  ];
+  let pdf = '%PDF-1.4\\n';
+  const pdfOffsets = [0];
+  pdfObjects.forEach((object) => { pdfOffsets.push(pdf.length); pdf += object; });
+  const xrefOffset = pdf.length;
+  pdf += 'xref\\n0 6\\n0000000000 65535 f \\n' + pdfOffsets.slice(1).map((offset) => String(offset).padStart(10, '0') + ' 00000 n \\n').join('');
+  pdf += 'trailer\\n<< /Size 6 /Root 1 0 R >>\\nstartxref\\n' + xrefOffset + '\\n%%EOF';
   const transfer = new DataTransfer();
-  transfer.items.add(new File([image], '序號01__光點__林同學__圖片作品.png', { type: 'image/png' }));
+  transfer.items.add(new File([image], '序號01__光點__林同學__圖片作品.svg', { type: 'image/svg+xml' }));
   transfer.items.add(new File([fromBase64('GkXfo0A=')], '序號02__影像實驗__陳同學__影片作品.webm', { type: 'video/webm' }));
   transfer.items.add(new File([wav], '序號03__聲音日記__張同學__音訊作品.wav', { type: 'audio/wav' }));
-  transfer.items.add(new File(['%PDF-1.4\\n%%EOF'], '序號04__紙上故事__黃同學__PDF 作品.pdf', { type: 'application/pdf' }));
+  transfer.items.add(new File([pdf], '序號04__紙上故事__黃同學__PDF 作品.pdf', { type: 'application/pdf' }));
   transfer.items.add(new File([gltf], '序號05__三角星球__王同學__3D 作品.gltf', { type: 'model/gltf+json' }));
   const input = document.querySelector('#media-file-input');
   input.files = transfer.files;
   input.dispatchEvent(new Event('change', { bubbles: true }));
 })()`);
 await waitFor("document.querySelectorAll('.work-card').length === 5", 'five mixed-media cards');
+
+await verifyCardPreview('光點', '.work-preview-layer img');
+await verifyCardPreview('影像實驗', '.work-preview-layer video');
+await verifyCardPreview('聲音日記', '.work-preview-layer audio');
+await verifyCardPreview('紙上故事', '.work-preview-layer iframe');
+await verifyCardPreview('三角星球', '.work-preview-layer canvas');
 
 await play('光點', '.media-stage .native-renderer--image img');
 await play('影像實驗', '.media-stage video');
@@ -162,7 +191,7 @@ for (let attempt = 0; attempt < 100; attempt += 1) {
 const archivesAfter = (await readdir(evidenceDir)).filter((name) => name.endsWith('.c3dg')).length;
 assert(downloads.length > downloadsBefore && archivesAfter > 0, 'local gallery archive was not downloaded');
 
-await evaluate("document.querySelector('#works').scrollIntoView(); true");
+await evaluate("document.querySelector('.work-grid').scrollIntoView({ block: 'start' }); true");
 await new Promise((resolve) => setTimeout(resolve, 200));
 const screenshot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
 await writeFile(path.join(evidenceDir, `${evidencePrefix}-mixed-media.png`), Buffer.from(screenshot.data, 'base64'));
@@ -176,6 +205,7 @@ console.log(JSON.stringify({
   appUrl,
   media: ['image', 'video', 'audio', 'pdf', 'model3d'],
   cards: 5,
+  cardPreviews: ['image', 'video', 'audio', 'pdf', 'model3d'],
   indexedDbSaveAndReload: true,
   archiveDownloaded: true,
   uploadRequests: uploadRequests.length,
