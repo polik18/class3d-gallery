@@ -1,0 +1,29 @@
+{
+  "schema": "class3d-engagement-v1",
+  "updatedAt": 1790068020948,
+  "assets": {
+    "artwork-light": {
+      "assetId": "artwork-light",
+      "likedBy": [
+        "bb788b1e-7b52-488f-809e-eeacc9fe5fca",
+        "243e2360-30a3-4d68-a165-63d87fef8126"
+      ],
+      "humanViews": 0,
+      "interactions": 5,
+      "dwellTimeMs": 0,
+      "comments": [
+        {
+          "schema": "class3d-comment-v1",
+          "id": "0e1e64f1-d8d6-4e17-861e-244946e44541",
+          "exhibitionId": "49d5a58c-7851-49af-9a11-322273424d23",
+          "assetId": "artwork-light",
+          "displayName": "小明",
+          "body": "作品很有想像力！",
+          "approved": true,
+          "createdAt": 1790068020941
+        }
+      ],
+      "updatedAt": 1790068020948
+    }
+  }
+}

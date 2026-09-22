@@ -1,45 +1,51 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 31,
+  "revision": 32,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P08",
   "current_task": "P08-T01",
-  "status": "IN_PROGRESS",
+  "status": "VERIFYING",
   "progress_percent": 78,
   "owner": "huangjianzhe",
   "started_at": "2026-09-22T08:51:13.455Z",
-  "updated_at": "2026-09-22T09:00:13.310Z",
+  "updated_at": "2026-09-22T09:08:08.700Z",
   "base_commit": "1f665d5fd8adf6c97f2e88990db882e3a0cbce74",
   "delivery_commit": null,
   "lease": {
     "owner": "huangjianzhe",
     "acquired_at": "2026-09-22T08:51:13.455Z",
-    "heartbeat_at": "2026-09-22T09:00:13.310Z",
-    "expires_at": "2026-09-22T09:30:13.310Z"
+    "heartbeat_at": "2026-09-22T09:08:08.700Z",
+    "expires_at": "2026-09-22T09:38:08.700Z"
   },
   "expected_files": [
     "src/engagement/",
     "src/storage/engagement.ts",
     "src/engagement/view.ts",
-    "tests/engagement.test.ts"
+    "tests/engagement.test.ts",
+    "project/evidence/P08-T01/"
   ],
   "last_verified": {
-    "commit": "1f665d5fd8adf6c97f2e88990db882e3a0cbce74",
+    "commit": "576d4c69be36589d6c0136cda9b4072b7d3e816a",
     "commands": [
+      "npm test",
       "npm run check",
-      "npm run test:engagement",
       "npm run build",
-      "git diff --check"
+      "npm run project:validate",
+      "git diff --check",
+      "node project/evidence/P08-T01/smoke.mjs",
+      "Chrome headless 390px engagement dialog smoke test"
     ],
-    "result": "PARTIAL_PASS",
+    "result": "PASS",
     "evidence": [
-      "project/evidence/P07-T01/verification.json",
-      "project/evidence/P07-T01/exhibition-settings.png"
+      "project/evidence/P08-T01/verification.json",
+      "project/evidence/P08-T01/local-engagement.png",
+      "project/evidence/P08-T01/class3d-engagement.json",
+      "project/evidence/P08-T01/class3d-comments.csv"
     ]
   },
-  "next_step": "啟動本機預覽，完成按讚、取消讚、留言審核、換訪客、人氣排序、重新載入持久化與匯出下載的瀏覽器 smoke test",
+  "next_step": "提交 P08 功能與瀏覽器證據，推送後執行 task:finish 驗收",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -50,7 +56,7 @@
     "P05-T01": "ACCEPTED",
     "P06-T01": "ACCEPTED",
     "P07-T01": "ACCEPTED",
-    "P08-T01": "IN_PROGRESS",
+    "P08-T01": "VERIFYING",
     "P09-T01": "PENDING",
     "P10-T01": "PENDING",
     "P11-T01": "PENDING"

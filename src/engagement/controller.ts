@@ -8,7 +8,7 @@ export class EngagementController {
   private readonly now: () => number;
   private readonly uuid: () => string;
 
-  constructor(store = new EngagementStore(), now: () => number = Date.now, uuid: () => string = crypto.randomUUID) {
+  constructor(store = new EngagementStore(), now: () => number = Date.now, uuid: () => string = () => crypto.randomUUID()) {
     this.store = store;
     this.now = now;
     this.uuid = uuid;

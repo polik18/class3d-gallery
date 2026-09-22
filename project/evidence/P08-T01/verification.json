@@ -1,0 +1,66 @@
+{
+  "task": "P08-T01",
+  "verified_at": "2026-09-22T09:08:00.000Z",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "65 tests passed across checkpoint, domain, ingest, classification, storage, renderers, gallery, settings and engagement"
+    },
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "summary": "TypeScript type check passed"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "Vite production build completed"
+    },
+    {
+      "command": "npm run project:validate",
+      "exit_code": 0,
+      "summary": "Project checkpoint and manifest remain consistent"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "No whitespace errors"
+    },
+    {
+      "command": "node project/evidence/P08-T01/smoke.mjs",
+      "exit_code": 0,
+      "summary": "Exercised like, unlike, second visitor, moderated comment approval, popularity sorting, reload persistence and JSON/CSV download with no interaction network requests or page errors"
+    },
+    {
+      "command": "Chrome headless 390px engagement dialog smoke test",
+      "exit_code": 0,
+      "summary": "Document and engagement dialog fit a 390px viewport without horizontal overflow"
+    }
+  ],
+  "browser": {
+    "name": "Google Chrome headless",
+    "asset_id": "artwork-light",
+    "likes_after_two_visitors": 2,
+    "approved_comments": 1,
+    "persisted_after_reload": true,
+    "interaction_network_requests": 0,
+    "page_errors": 0,
+    "mobile_document_width": 390,
+    "mobile_viewport_width": 390
+  },
+  "acceptance": {
+    "likes_and_comments_remain_local": true,
+    "comments_can_be_moderated": true,
+    "automatic_showcase_does_not_increase_human_popularity": true,
+    "exports_download_locally": true,
+    "popularity_sort_uses_local_engagement": true
+  },
+  "evidence": [
+    "project/evidence/P08-T01/local-engagement.png",
+    "project/evidence/P08-T01/class3d-engagement.json",
+    "project/evidence/P08-T01/class3d-comments.csv",
+    "project/evidence/P08-T01/smoke.mjs"
+  ]
+}
