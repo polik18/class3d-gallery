@@ -70,15 +70,23 @@ export function mountMediaViewer({ container, shell, input, status }: MediaViewe
   };
   const onDrop = (event: DragEvent) => {
     onDragLeave(event);
-    if (event.dataTransfer) void collectDroppedFiles(event.dataTransfer).then(showCandidates);
+    if (event.dataTransfer) {
+      void collectDroppedFiles(event.dataTransfer)
+        .then(showCandidates)
+        .catch((error: unknown) => {
+          status.textContent = error instanceof Error ? `無法讀取拖放內容：${error.message}` : '無法讀取拖放內容';
+        });
+    }
   };
   const onVisibility = () => session.setFocused(!document.hidden);
+  const onPageHide = () => session.clear();
   input.addEventListener('change', onInput);
   shell.addEventListener('dragenter', onDrag);
   shell.addEventListener('dragover', onDrag);
   shell.addEventListener('dragleave', onDragLeave);
   shell.addEventListener('drop', onDrop);
   document.addEventListener('visibilitychange', onVisibility);
+  window.addEventListener('pagehide', onPageHide);
   return {
     showFiles(files: Iterable<File>) { return showCandidates(collectInputFiles(files)); },
     destroy() {
@@ -92,6 +100,7 @@ export function mountMediaViewer({ container, shell, input, status }: MediaViewe
       shell.removeEventListener('dragleave', onDragLeave);
       shell.removeEventListener('drop', onDrop);
       document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pagehide', onPageHide);
     }
   };
 }

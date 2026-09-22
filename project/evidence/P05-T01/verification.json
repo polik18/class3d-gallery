@@ -1,0 +1,44 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P05-T01",
+  "verified_at": "2026-09-22T13:10:12+08:00",
+  "base_commit": "e312bea030cc6ee8ce139adf36038bfe9cbcd6ce",
+  "result": "PASS",
+  "commands": [
+    { "command": "npm test", "exit_code": 0, "summary": "41 tests passed, including 5 renderer lifecycle tests" },
+    { "command": "npm run check", "exit_code": 0, "summary": "TypeScript strict check passed" },
+    { "command": "npm run build", "exit_code": 0, "summary": "Production build passed; initial application chunk is 16.34 kB and the 3D bundle loads on demand" },
+    { "command": "npm run project:validate", "exit_code": 0, "summary": "Project checkpoint and manifest remain consistent" },
+    { "command": "git diff --check", "exit_code": 0, "summary": "No whitespace errors" },
+    { "command": "Chrome headless multimedia smoke test", "exit_code": 0, "summary": "Loaded valid image, WebM video, WAV audio, PDF and embedded GLTF; exercised 3D controls and renderer switching" }
+  ],
+  "browser_smoke": {
+    "browser": "Google Chrome headless",
+    "image_rendered": true,
+    "video_rendered": true,
+    "video_duration_seconds": 0.6,
+    "audio_rendered": true,
+    "audio_duration_seconds": 0.6,
+    "pdf_rendered": true,
+    "gltf_rendered": true,
+    "orbit_drag_and_zoom_exercised": true,
+    "auto_rotate_toggled": true,
+    "model_removed_after_switch": true,
+    "object_urls_revoked": 5,
+    "page_errors": [],
+    "http_errors": [],
+    "screenshot": "project/evidence/P05-T01/multimedia-stage.png"
+  },
+  "acceptance": {
+    "image_renderer": true,
+    "video_renderer": true,
+    "audio_renderer": true,
+    "pdf_renderer": true,
+    "interactive_3d_renderer": true,
+    "pause_when_tab_hidden": true,
+    "destroy_previous_renderer_on_switch": true,
+    "revoke_object_urls": true,
+    "dispose_textures_geometry_and_webgl": true,
+    "server_uploads": false
+  }
+}

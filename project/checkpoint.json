@@ -1,23 +1,23 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 19,
+  "revision": 20,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P05",
   "current_task": "P05-T01",
-  "status": "IN_PROGRESS",
+  "status": "VERIFYING",
   "progress_percent": 44,
   "owner": "huangjianzhe",
   "started_at": "2026-09-22T04:48:33.470Z",
-  "updated_at": "2026-09-22T05:03:17.944Z",
+  "updated_at": "2026-09-22T05:11:03.717Z",
   "base_commit": "5b5dae7f85faa832bf3949569298454cf39614dd",
   "delivery_commit": null,
   "lease": {
     "owner": "huangjianzhe",
     "acquired_at": "2026-09-22T04:48:33.470Z",
-    "heartbeat_at": "2026-09-22T05:03:17.944Z",
-    "expires_at": "2026-09-22T05:33:17.944Z"
+    "heartbeat_at": "2026-09-22T05:11:03.717Z",
+    "expires_at": "2026-09-22T05:41:03.717Z"
   },
   "expected_files": [
     "src/renderers/",
@@ -32,17 +32,22 @@
     "tests/renderers.test.ts"
   ],
   "last_verified": {
-    "commit": "5b5dae7f85faa832bf3949569298454cf39614dd",
+    "commit": "e312bea030cc6ee8ce139adf36038bfe9cbcd6ce",
     "commands": [
-      "npm run test:renderers",
-      "npm run check"
+      "npm test",
+      "npm run check",
+      "npm run build",
+      "npm run project:validate",
+      "git diff --check",
+      "Chrome headless multimedia smoke test"
     ],
-    "result": "PARTIAL_PASS",
+    "result": "PASS",
     "evidence": [
-      "project/evidence/P04-T01/verification.json"
+      "project/evidence/P05-T01/verification.json",
+      "project/evidence/P05-T01/multimedia-stage.png"
     ]
   },
-  "next_step": "以 Chrome 依序驗證圖片、影片、音訊、PDF、嵌入式 GLTF，確認切換釋放 Object URL 與 3D 操作",
+  "next_step": "提交 P05 最終修正與驗證證據，推送後以 delivery commit 驗收",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -50,7 +55,7 @@
     "P02-T01": "ACCEPTED",
     "P03-T01": "ACCEPTED",
     "P04-T01": "ACCEPTED",
-    "P05-T01": "IN_PROGRESS",
+    "P05-T01": "VERIFYING",
     "P06-T01": "PENDING",
     "P07-T01": "PENDING",
     "P08-T01": "PENDING",
