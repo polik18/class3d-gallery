@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createAssetRecord } from '../src/assets/types.ts';
-import { exportGalleryArchive, parseGalleryArchive } from '../src/storage/export.ts';
+import { exportGalleryArchive, importGalleryArchive, parseGalleryArchive } from '../src/storage/export.ts';
 import { GalleryStorage, type KeyValueDriver } from '../src/storage/indexedDb.ts';
 
 class MemoryDriver implements KeyValueDriver {
@@ -44,6 +44,17 @@ test('full archive preserves records and binary file bytes', async () => {
   assert.equal(parsed.exportedAt, 200);
   assert.equal(parsed.assets[0].record.id, 'asset-1');
   assert.equal(await parsed.assets[0].files[0].blob.text(), 'model-data');
+});
+
+test('an exported archive can restore the complete gallery database', async () => {
+  const item = fixture();
+  const stored = { schema: 'class3d-stored-asset-v1' as const, record: item.record, files: [{ descriptor: item.descriptor, blob: item.blob }], storedAt: 100 };
+  const storage = new GalleryStorage(new MemoryDriver(), async () => ({ usage: 0, quota: 1_000, available: 1_000 }));
+  const result = await importGalleryArchive(storage, exportGalleryArchive([stored], 200));
+  assert.deepEqual(result, { exportedAt: 200, importedCount: 1 });
+  const restored = await storage.getAsset('asset-1');
+  assert.equal(restored?.record.savedLocally, true);
+  assert.equal(await restored?.files[0].blob.text(), 'model-data');
 });
 
 test('corrupt archives are rejected', async () => {

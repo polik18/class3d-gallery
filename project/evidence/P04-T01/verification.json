@@ -1,0 +1,37 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P04-T01",
+  "verified_at": "2026-09-22T12:31:06+08:00",
+  "base_commit": "3b66c395b8c51ffd361f627a458c3d421a0ffd3b",
+  "result": "PASS",
+  "commands": [
+    { "command": "npm test", "exit_code": 0, "summary": "36 tests passed, including 5 browser-local storage and archive tests" },
+    { "command": "npm run check", "exit_code": 0, "summary": "TypeScript strict check passed" },
+    { "command": "npm run build", "exit_code": 0, "summary": "Vite production build passed; existing bundle-size warning remains non-blocking" },
+    { "command": "npm run project:validate", "exit_code": 0, "summary": "Project checkpoint and manifest remain consistent" },
+    { "command": "git diff --check", "exit_code": 0, "summary": "No whitespace errors" },
+    { "command": "Chrome headless IndexedDB smoke test", "exit_code": 0, "summary": "Saved one binary asset, survived reload, exported, cleared, re-imported byte-for-byte, and ended with an empty database; no page errors" }
+  ],
+  "browser_smoke": {
+    "browser": "Google Chrome headless",
+    "saved_assets": 1,
+    "survived_reload": true,
+    "binary_payload_preserved": true,
+    "archive_size_bytes": 975,
+    "count_after_clear": 0,
+    "imported_assets": 1,
+    "final_count": 0,
+    "page_errors": [],
+    "persistent_storage_permission": false,
+    "persistent_storage_note": "Headless/incognito-like test context may deny persist(); IndexedDB data still survived a real page reload."
+  },
+  "acceptance": {
+    "reload_restores_saved_assets": true,
+    "quota_preflight_rejects_unsafe_writes": true,
+    "archive_export_preserves_binary_files": true,
+    "archive_import_restores_database": true,
+    "clear_removes_all_local_assets": true,
+    "schema_version_is_explicit": true,
+    "server_uploads": false
+  }
+}

@@ -51,7 +51,7 @@
       "weight": 10,
       "depends_on": ["P03-T01"],
       "task_doc": "project/tasks/P04-T01.md",
-      "outputs": ["src/storage/indexedDb.ts", "src/storage/export.ts"],
+      "outputs": ["src/storage/indexedDb.ts", "src/storage/export.ts", "tests/storage.test.ts"],
       "acceptance": ["重新整理後可恢復已保存作品", "容量不足時安全拒絕", "可匯出與清除"]
     },
     {

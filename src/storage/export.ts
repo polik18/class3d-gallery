@@ -1,4 +1,4 @@
-import type { StoredAsset, StoredAssetFile } from './indexedDb.ts';
+import { GalleryStorage, type StoredAsset, type StoredAssetFile } from './indexedDb.ts';
 
 const MAGIC = new TextEncoder().encode('C3DGV1\n\0');
 
@@ -55,4 +55,10 @@ export async function parseGalleryArchive(archive: Blob): Promise<{ exportedAt: 
     })
   }));
   return { exportedAt: manifest.exportedAt, assets };
+}
+
+export async function importGalleryArchive(storage: GalleryStorage, archive: Blob) {
+  const parsed = await parseGalleryArchive(archive);
+  const importedCount = await storage.restoreAssets(parsed.assets);
+  return { exportedAt: parsed.exportedAt, importedCount };
 }

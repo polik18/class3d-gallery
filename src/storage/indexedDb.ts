@@ -62,15 +62,35 @@ export class GalleryStorage {
     this.estimate = estimate;
   }
 
-  async saveAsset(record: AssetRecord, files: StoredAssetFile[], storedAt = Date.now()) {
-    const requiredBytes = files.reduce((total, item) => total + item.blob.size, 0);
+  private async ensureCapacity(requiredBytes: number) {
     const capacity = await this.estimate();
     if (capacity && capacity.quota > 0 && requiredBytes > capacity.available * 0.9) {
       throw new Error(`本機儲存空間不足：需要 ${requiredBytes} bytes，可安全使用 ${Math.floor(capacity.available * 0.9)} bytes`);
     }
+  }
+
+  async saveAsset(record: AssetRecord, files: StoredAssetFile[], storedAt = Date.now()) {
+    const requiredBytes = files.reduce((total, item) => total + item.blob.size, 0);
+    await this.ensureCapacity(requiredBytes);
     const value: StoredAsset = { schema: 'class3d-stored-asset-v1', record: { ...record, savedLocally: true }, files, storedAt };
     await this.driver.set(`${ASSET_PREFIX}${record.id}`, value);
     return value;
+  }
+
+  async restoreAssets(assets: StoredAsset[]) {
+    const requiredBytes = assets.reduce(
+      (total, asset) => total + asset.files.reduce((fileTotal, item) => fileTotal + item.blob.size, 0),
+      0
+    );
+    await this.ensureCapacity(requiredBytes);
+    for (const asset of assets) {
+      if (asset.schema !== 'class3d-stored-asset-v1') throw new Error('作品資料版本不相容');
+      await this.driver.set(`${ASSET_PREFIX}${asset.record.id}`, {
+        ...asset,
+        record: { ...asset.record, savedLocally: true }
+      });
+    }
+    return assets.length;
   }
 
   getAsset(id: string) { return this.driver.get<StoredAsset>(`${ASSET_PREFIX}${id}`); }
