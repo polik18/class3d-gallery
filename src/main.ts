@@ -8,6 +8,9 @@ import type { ExhibitionMode } from './exhibition/types';
 import type { ExhibitionSettings } from './exhibition/types';
 import { ExhibitionSettingsStore } from './exhibition/settings';
 import { mountSettingsView } from './exhibition/settingsView';
+import { EngagementController } from './engagement/controller';
+import { getVisitorSession, startNewVisitorSession } from './engagement/session';
+import { mountEngagementView } from './engagement/view';
 import { GalleryController } from './gallery/galleryController';
 import { popularityScore } from './gallery/sort';
 import { generateArtworkURL } from './qrcode/share';
@@ -159,6 +162,7 @@ app.innerHTML = `
   <dialog class="settings-dialog" id="settings-dialog" aria-label="展覽設定">
     <div id="settings-view"></div>
   </dialog>
+  <dialog class="engagement-dialog" id="engagement-dialog" aria-label="作品按讚與留言"></dialog>
 
   <footer><span>Class3D Gallery v1.2</span><span>Architecture Preview · Local Data</span></footer>
 `;
@@ -187,12 +191,19 @@ const worksTitle = document.querySelector<HTMLElement>('#works-title');
 const settingsDialog = document.querySelector<HTMLDialogElement>('#settings-dialog');
 const settingsViewContainer = document.querySelector<HTMLElement>('#settings-view');
 const openSettingsButton = document.querySelector<HTMLButtonElement>('#open-settings');
+const engagementDialog = document.querySelector<HTMLDialogElement>('#engagement-dialog');
 const gallery = new GalleryController(demoAssets);
+const engagement = new EngagementController();
+const exhibitionSettingsStore = new ExhibitionSettingsStore();
 const renderables = new Map<string, RenderableAsset>();
 let importedOnce = false;
 let mediaViewer: ReturnType<typeof mountMediaViewer> | null = null;
+let engagementView: ReturnType<typeof mountEngagementView> | null = null;
+let visitorId = getVisitorSession();
+let activeExhibitionSettings = exhibitionSettingsStore.load();
 
 function applyExhibitionSettings(settings: ExhibitionSettings) {
+  activeExhibitionSettings = settings;
   const defaultDescription = '從電腦選擇圖片、影片、音訊、PDF 或 3D 作品，直接在瀏覽器裡展示。3D 可旋轉、縮放、平移與播放模型動畫，檔案不會上傳到任何伺服器。';
   if (heroTitle) heroTitle.textContent = settings.title;
   if (topbarExhibitionTitle) topbarExhibitionTitle.textContent = settings.title;
@@ -252,6 +263,24 @@ function cardForAsset(asset: AssetRecord, index: number, selected: boolean) {
   copy.append(title, byline);
   const actions = document.createElement('div');
   actions.className = 'work-actions';
+  const localEngagement = engagement.getAsset(asset.id);
+  const liked = localEngagement.likedBy.includes(visitorId);
+  const like = document.createElement('button');
+  like.type = 'button';
+  like.className = 'card-like';
+  like.textContent = `${liked ? '♥' : '♡'} ${localEngagement.likedBy.length}`;
+  like.setAttribute('aria-pressed', String(liked));
+  like.setAttribute('aria-label', `${liked ? '取消讚' : '按讚'} ${asset.title}`);
+  like.disabled = !activeExhibitionSettings.engagement.likesEnabled;
+  like.addEventListener('click', () => {
+    engagement.toggleLike(asset.id, visitorId);
+    syncEngagement(asset.id);
+  });
+  const comments = document.createElement('button');
+  comments.type = 'button';
+  comments.textContent = `留言 ${localEngagement.comments.filter((comment) => comment.approved).length}`;
+  comments.disabled = !activeExhibitionSettings.engagement.commentsEnabled;
+  comments.addEventListener('click', () => engagementView?.open(asset.id, asset.title));
   const choose = document.createElement('label');
   choose.className = 'selection-toggle';
   const checkbox = document.createElement('input');
@@ -263,14 +292,20 @@ function cardForAsset(asset: AssetRecord, index: number, selected: boolean) {
   const solo = document.createElement('button');
   solo.type = 'button';
   solo.textContent = '獨展';
-  solo.addEventListener('click', () => gallery.focusAsset(asset.id));
-  actions.append(choose, solo);
+  solo.addEventListener('click', () => {
+    engagement.recordView(asset.id, 'human');
+    syncEngagement(asset.id);
+    gallery.focusAsset(asset.id);
+  });
+  actions.append(like, comments, choose, solo);
   const renderable = renderables.get(asset.id);
   if (renderable) {
     const preview = document.createElement('button');
     preview.type = 'button';
     preview.textContent = '播放';
     preview.addEventListener('click', () => {
+      engagement.recordView(asset.id, 'human');
+      syncEngagement(asset.id);
       if (mediaStatus) mediaStatus.textContent = `正在開啟 ${asset.title}…`;
       void mediaViewer?.showAsset(renderable).then(() => {
         if (renderable.kind !== 'model3d' && mediaStatus) mediaStatus.textContent = `正在展示 ${asset.title}，檔案只存在這個瀏覽器。`;
@@ -315,6 +350,12 @@ function renderGallery() {
   if (numberTypeControl) numberTypeControl.hidden = state.sort.key !== 'number';
 }
 
+function syncEngagement(assetId?: string) {
+  gallery.setAssets(gallery.getAssets().map((asset) => (
+    !assetId || asset.id === assetId ? { ...asset, popularity: engagement.popularity(asset.id) } : asset
+  )));
+}
+
 function acceptImported(imported: ImportedMediaAsset[]) {
   const current = importedOnce ? gallery.getAssets() : [];
   if (!importedOnce) renderables.clear();
@@ -347,10 +388,9 @@ galleryCategory?.addEventListener('change', () => gallery.setCategory(galleryCat
 gallery.subscribe(renderGallery);
 
 if (settingsDialog && settingsViewContainer && openSettingsButton) {
-  const settingsStore = new ExhibitionSettingsStore();
   const settingsView = mountSettingsView({
     container: settingsViewContainer,
-    store: settingsStore,
+    store: exhibitionSettingsStore,
     onApply: applyExhibitionSettings,
     onClose: () => settingsDialog.close()
   });
@@ -363,3 +403,20 @@ if (settingsDialog && settingsViewContainer && openSettingsButton) {
   });
   settingsDialog.addEventListener('close', () => settingsView.reload());
 }
+
+if (engagementDialog) {
+  engagementView = mountEngagementView({
+    dialog: engagementDialog,
+    controller: engagement,
+    getVisitorId: () => visitorId,
+    startNewVisitor: () => {
+      visitorId = startNewVisitorSession();
+      syncEngagement();
+      return visitorId;
+    },
+    getSettings: () => activeExhibitionSettings,
+    onChange: syncEngagement
+  });
+}
+
+syncEngagement();

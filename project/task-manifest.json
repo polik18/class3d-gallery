@@ -91,7 +91,7 @@
       "weight": 8,
       "depends_on": ["P07-T01"],
       "task_doc": "project/tasks/P08-T01.md",
-      "outputs": ["src/engagement/", "src/storage/engagement.ts"],
+      "outputs": ["src/engagement/", "src/storage/engagement.ts", "tests/engagement.test.ts"],
       "acceptance": ["按讚與留言只存在本機", "留言可審核", "自動展示不增加人氣"]
     },
     {
