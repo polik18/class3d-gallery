@@ -1,37 +1,45 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 21,
+  "revision": 23,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P06",
   "current_task": "P06-T01",
-  "status": "PENDING",
+  "status": "IN_PROGRESS",
   "progress_percent": 60,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T05:11:34.839Z",
-  "base_commit": "5b5dae7f85faa832bf3949569298454cf39614dd",
-  "delivery_commit": "0312842c3dffefdb8f7cc1ca75f0cfdd74d175f0",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T05:22:17.426Z",
+  "updated_at": "2026-09-22T05:33:39.477Z",
+  "base_commit": "5146ff2f7341aad1be1048f6ba2152d5f40fea82",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T05:22:17.426Z",
+    "heartbeat_at": "2026-09-22T05:33:39.477Z",
+    "expires_at": "2026-09-22T06:03:39.477Z"
+  },
+  "expected_files": [
+    "src/gallery/galleryController.ts",
+    "src/gallery/sort.ts",
+    "tests/gallery.test.ts",
+    "src/main.ts",
+    "src/renderers/mediaViewer.ts"
+  ],
   "last_verified": {
-    "commit": "e312bea030cc6ee8ce139adf36038bfe9cbcd6ce",
+    "commit": "5146ff2f7341aad1be1048f6ba2152d5f40fea82",
     "commands": [
-      "npm test",
+      "npm run test:gallery",
       "npm run check",
-      "npm run build",
-      "npm run project:validate",
-      "git diff --check",
-      "Chrome headless multimedia smoke test"
+      "npm run build"
     ],
-    "result": "PASS",
+    "result": "PARTIAL_PASS",
     "evidence": [
       "project/evidence/P05-T01/verification.json",
       "project/evidence/P05-T01/multimedia-stage.png"
     ]
   },
-  "next_step": "執行 npm run task:start -- P06-T01",
+  "next_step": "以 Chrome 匯入多件作品，驗證全展、分類展、自選展、獨展與五種排序切換",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -40,7 +48,7 @@
     "P03-T01": "ACCEPTED",
     "P04-T01": "ACCEPTED",
     "P05-T01": "ACCEPTED",
-    "P06-T01": "PENDING",
+    "P06-T01": "IN_PROGRESS",
     "P07-T01": "PENDING",
     "P08-T01": "PENDING",
     "P09-T01": "PENDING",

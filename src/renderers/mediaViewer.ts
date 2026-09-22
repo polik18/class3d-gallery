@@ -2,6 +2,7 @@ import { classifyCandidates } from '../assets/classifier.ts';
 import { resolveAssetBundles } from '../assets/dependencyResolver.ts';
 import { parseArtworkFileName } from '../assets/fileNameParser.ts';
 import { collectDroppedFiles, collectInputFiles, type ImportCandidate } from '../assets/ingest.ts';
+import { createAssetRecord, type AssetFileDescriptor, type AssetRecord } from '../assets/types.ts';
 import { mountRenderer } from './registry.ts';
 import { RendererSession } from './session.ts';
 import type { RenderableAsset, RenderableKind } from './types.ts';
@@ -11,23 +12,66 @@ interface MediaViewerElements {
   shell: HTMLElement;
   input: HTMLInputElement;
   status: HTMLElement;
+  onImport?: (assets: ImportedMediaAsset[]) => void;
 }
 
-function toRenderableAsset(bundle: Awaited<ReturnType<typeof resolveAssetBundles>>[number]): RenderableAsset {
+export interface ImportedMediaAsset {
+  record: AssetRecord;
+  renderable: RenderableAsset;
+}
+
+const CATEGORY_LABELS: Record<RenderableKind, string> = {
+  image: '圖片',
+  video: '影片',
+  audio: '音訊',
+  pdf: 'PDF',
+  model3d: '3D'
+};
+
+function toImportedMediaAsset(bundle: Awaited<ReturnType<typeof resolveAssetBundles>>[number], importOrder: number, importedAt: number): ImportedMediaAsset {
   const parsed = parseArtworkFileName(bundle.primary.file.name);
-  return {
+  const candidates = [bundle.primary, ...bundle.dependencies];
+  const sourceFiles: AssetFileDescriptor[] = candidates.map((candidate, index) => ({
+    id: crypto.randomUUID(),
+    name: candidate.file.name,
+    relativePath: candidate.relativePath,
+    mimeType: candidate.file.type,
+    size: candidate.file.size,
+    lastModified: candidate.file.lastModified,
+    role: index === 0 ? 'primary' : 'dependency'
+  }));
+  const record = createAssetRecord({
+    originalFileName: bundle.primary.file.name,
     kind: bundle.primary.kind as RenderableKind,
     title: parsed.title,
-    files: [bundle.primary, ...bundle.dependencies].map((candidate) => ({
+    description: parsed.description,
+    category: CATEGORY_LABELS[bundle.primary.kind as RenderableKind],
+    importedAt,
+    importOrder,
+    sourceFiles
+  });
+  Object.assign(record, {
+    displayNumber: parsed.displayNumber,
+    numberType: parsed.numberType,
+    author: parsed.author,
+    status: 'ready' as const
+  });
+  return {
+    record,
+    renderable: {
+      kind: bundle.primary.kind as RenderableKind,
+      title: parsed.title,
+      files: candidates.map((candidate) => ({
       blob: candidate.file,
       name: candidate.file.name,
       relativePath: candidate.relativePath,
       mimeType: candidate.file.type
-    }))
+      }))
+    }
   };
 }
 
-export function mountMediaViewer({ container, shell, input, status }: MediaViewerElements) {
+export function mountMediaViewer({ container, shell, input, status, onImport }: MediaViewerElements) {
   const session = new RendererSession();
   let generation = 0;
   let destroyed = false;
@@ -38,16 +82,20 @@ export function mountMediaViewer({ container, shell, input, status }: MediaViewe
     try {
       const bundles = await resolveAssetBundles(await classifyCandidates(candidates));
       if (requestId !== generation || destroyed) return;
-      const bundle = bundles.find((item) => item.primary.kind !== 'unsupported');
-      if (!bundle) throw new Error('沒有可展示的圖片、影片、音訊、PDF、GLB 或 GLTF 檔案');
-      if (bundle.errors.length > 0) throw new Error(`GLTF 解析失敗：${bundle.errors[0]}`);
-      if (bundle.missingDependencies.length > 0) throw new Error(`缺少 GLTF 相依檔：${bundle.missingDependencies.join('、')}`);
-      if (bundle.externalDependencies.length > 0) throw new Error('GLTF 含有外部網址資源；本展覽不連線下載');
-      const asset = toRenderableAsset(bundle);
+      const supported = bundles.filter((item) => item.primary.kind !== 'unsupported');
+      if (supported.length === 0) throw new Error('沒有可展示的圖片、影片、音訊、PDF、GLB 或 GLTF 檔案');
+      const invalid = supported.find((bundle) => bundle.errors.length > 0 || bundle.missingDependencies.length > 0 || bundle.externalDependencies.length > 0);
+      if (invalid?.errors.length) throw new Error(`GLTF 解析失敗：${invalid.errors[0]}`);
+      if (invalid?.missingDependencies.length) throw new Error(`缺少 GLTF 相依檔：${invalid.missingDependencies.join('、')}`);
+      if (invalid?.externalDependencies.length) throw new Error('GLTF 含有外部網址資源；本展覽不連線下載');
+      const importedAt = Date.now();
+      const imported = supported.map((bundle, index) => toImportedMediaAsset(bundle, index, importedAt));
+      onImport?.(imported);
+      const asset = imported[0].renderable;
       await session.show(() => mountRenderer(container, asset, status));
       if (requestId !== generation || destroyed) return;
       if (asset.kind !== 'model3d') {
-        const extra = bundles.length > 1 ? `；本階段先預覽第 1 件，共偵測到 ${bundles.length} 件` : '';
+        const extra = imported.length > 1 ? `；已加入展覽共 ${imported.length} 件，目前預覽第 1 件` : '';
         status.textContent = `已載入 ${asset.title}（${asset.kind}）${extra}。檔案只存在這個瀏覽器。`;
       }
     } catch (error) {
@@ -89,6 +137,7 @@ export function mountMediaViewer({ container, shell, input, status }: MediaViewe
   window.addEventListener('pagehide', onPageHide);
   return {
     showFiles(files: Iterable<File>) { return showCandidates(collectInputFiles(files)); },
+    showAsset(asset: RenderableAsset) { return session.show(() => mountRenderer(container, asset, status)); },
     destroy() {
       if (destroyed) return;
       destroyed = true;

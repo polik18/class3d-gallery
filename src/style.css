@@ -91,15 +91,21 @@ h2 { margin: 0; font-size: clamp(34px, 4vw, 58px); line-height: 1.08; letter-spa
 
 .works-section { padding: 110px clamp(24px, 5vw, 80px); }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 54px; }
-.mode-switcher { display: flex; padding: 4px; border: 1px solid var(--line); }
+.mode-switcher { display: flex; flex-wrap: wrap; padding: 4px; border: 1px solid var(--line); }
 .mode-button { border: 0; padding: 9px 15px; background: transparent; color: #77736c; font-size: 12px; cursor: pointer; }
 .mode-button.active { color: white; background: var(--ink); }
+.gallery-toolbar { display: grid; grid-template-columns: repeat(4, minmax(130px, 1fr)) auto; gap: 12px; align-items: end; margin: -20px 0 34px; padding: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.3); }
+.gallery-toolbar label { display: grid; gap: 7px; color: #77736c; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+.gallery-toolbar select { width: 100%; min-height: 40px; border: 1px solid var(--line); border-radius: 0; padding: 0 34px 0 11px; color: var(--ink); background: #f8f5ef; font: inherit; font-weight: 500; }
+.gallery-toolbar p { align-self: center; margin: 0; color: #77736c; font-size: 12px; white-space: nowrap; }
 .work-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .work-card { min-width: 0; }
 .work-visual { position: relative; aspect-ratio: 4 / 5; overflow: hidden; transition: transform .35s ease; }
 .work-card:hover .work-visual { transform: translateY(-6px); }
 .work-visual::before, .work-visual::after { content: ''; position: absolute; border-radius: 50%; filter: blur(1px); }
 .work-visual span { position: absolute; top: 18px; left: 18px; z-index: 2; color: rgba(255,255,255,.75); font-size: 11px; letter-spacing: .15em; }
+.work-category { position: absolute; z-index: 2; left: 18px; bottom: 18px; max-width: 75%; color: rgba(255,255,255,.92); font-size: clamp(24px, 3vw, 42px); line-height: 1; letter-spacing: -.04em; }
+.work-kind { position: absolute; z-index: 2; top: 18px; right: 18px; color: rgba(255,255,255,.68); font-size: 10px; letter-spacing: .16em; }
 .work-1 .work-visual { background: #da553f; }
 .work-1 .work-visual::before { width: 72%; height: 72%; left: 14%; top: 14%; background: #f5bc63; }
 .work-1 .work-visual::after { width: 45%; height: 45%; left: 27%; top: 27%; background: #26322e; }
@@ -112,8 +118,12 @@ h2 { margin: 0; font-size: clamp(34px, 4vw, 58px); line-height: 1.08; letter-spa
 .work-meta { display: flex; justify-content: space-between; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--line); }
 .work-meta h3 { margin: 0; font-size: 18px; }
 .work-meta p { margin: 7px 0 0; color: #77736c; font-size: 13px; }
-.share-button { align-self: center; border: 0; padding: 5px 0; background: none; color: #77736c; cursor: pointer; font-size: 12px; }
-.share-button:hover { color: var(--orange); }
+.work-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 11px; }
+.work-actions button { border: 0; padding: 5px 0; background: none; color: #77736c; cursor: pointer; font-size: 12px; }
+.work-actions button:hover { color: var(--orange); }
+.selection-toggle { color: #77736c; cursor: pointer; font-size: 12px; white-space: nowrap; }
+.selection-toggle input { accent-color: var(--orange); }
+.gallery-empty { margin: 0; padding: 46px 20px; border: 1px dashed var(--line); color: #77736c; text-align: center; }
 .share-state { min-height: 22px; color: #77736c; font-size: 12px; }
 
 body[data-mode='fullscreen'] .work-grid { grid-template-columns: 1fr; max-width: 860px; margin-inline: auto; }
@@ -185,6 +195,8 @@ footer { display: flex; justify-content: space-between; padding: 28px clamp(24px
   .stats article { padding: 22px 10px; }
   .stats strong { font-size: 46px; }
   .section-heading { align-items: flex-start; flex-direction: column; }
+  .gallery-toolbar { grid-template-columns: 1fr 1fr; margin-top: 0; }
+  .gallery-toolbar p { grid-column: 1 / -1; }
   .work-grid { grid-template-columns: 1fr; }
   .architecture li { grid-template-columns: 38px 1fr; }
   .architecture li small { grid-column: 2; padding-bottom: 14px; }

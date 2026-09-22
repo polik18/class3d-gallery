@@ -2,9 +2,14 @@ import './style.css';
 import { createGuestUser } from './backend/auth';
 import type { CloudRecord } from './backend/database';
 import { calculateDashboard } from './dashboard/dashboard';
-import { setDisplayMode, type DisplayMode } from './exhibition/displayMode';
+import type { AssetRecord, AssetSortKey, SortDirection } from './assets/types';
+import { createAssetRecord } from './assets/types';
+import type { ExhibitionMode } from './exhibition/types';
+import { GalleryController } from './gallery/galleryController';
+import { popularityScore } from './gallery/sort';
 import { generateArtworkURL } from './qrcode/share';
-import { mountMediaViewer } from './renderers/mediaViewer';
+import { mountMediaViewer, type ImportedMediaAsset } from './renderers/mediaViewer';
+import type { RenderableAsset } from './renderers/types';
 import { createProfile } from './student/profile';
 
 const records: CloudRecord[] = [
@@ -21,6 +26,28 @@ const records: CloudRecord[] = [
 const user = createGuestUser('訪客教師');
 const stats = calculateDashboard(records);
 const artworks = records.filter((record) => record.type === 'artwork');
+const demoCategories = ['光影', '3D', '插畫'];
+const demoAssets = artworks.map((artwork, index) => {
+  const record = createAssetRecord({
+    id: artwork.id,
+    originalFileName: `${String(artwork.data.title)}.jpg`,
+    title: String(artwork.data.title),
+    description: String(artwork.data.title),
+    category: demoCategories[index],
+    kind: index === 1 ? 'model3d' : 'image',
+    importedAt: Date.now() - (artworks.length - index) * 60_000,
+    importOrder: index
+  });
+  Object.assign(record, {
+    displayNumber: index + 1,
+    numberType: 'seat' as const,
+    author: String(artwork.data.author),
+    manualOrder: index,
+    status: 'ready' as const,
+    popularity: { humanViews: 12 - index * 2, likes: [8, 13, 5][index], approvedComments: [2, 4, 1][index], interactions: [14, 21, 9][index], dwellTimeMs: [80_000, 140_000, 60_000][index] }
+  });
+  return record;
+});
 const app = document.querySelector<HTMLDivElement>('#app');
 
 if (!app) throw new Error('找不到應用程式掛載點');
@@ -41,7 +68,7 @@ app.innerHTML = `
         <h1 id="hero-title">讓每一件作品，<br /><em>擁有自己的空間。</em></h1>
         <p class="hero-intro">從電腦選擇圖片、影片、音訊、PDF 或 3D 作品，直接在瀏覽器裡展示。3D 可旋轉、縮放、平移與播放模型動畫，檔案不會上傳到任何伺服器。</p>
         <div class="hero-actions">
-          <label class="primary-button model-upload-button" for="model-file-input">
+          <label class="primary-button model-upload-button" for="media-file-input">
             選擇多媒體作品
             <input id="media-file-input" type="file" accept="image/*,video/*,audio/*,application/pdf,.glb,.gltf,model/gltf-binary,model/gltf+json" multiple />
           </label>
@@ -66,30 +93,44 @@ app.innerHTML = `
       <div class="stats" aria-label="內容統計">
         <article><strong>${stats.classes}</strong><span>班級</span></article>
         <article><strong>${stats.students}</strong><span>學生</span></article>
-        <article><strong>${stats.artworks}</strong><span>作品</span></article>
+        <article><strong id="artwork-count">${stats.artworks}</strong><span>作品</span></article>
       </div>
     </section>
 
     <section class="works-section" id="works" aria-labelledby="works-title">
       <div class="section-heading">
         <div><p class="section-index">02 / EXHIBITION</p><h2 id="works-title">本週精選作品</h2></div>
-        <div class="mode-switcher" aria-label="展示模式">
-          <button class="mode-button active" data-mode="gallery" type="button">展廳</button>
-          <button class="mode-button" data-mode="fullscreen" type="button">全螢幕</button>
-          <button class="mode-button" data-mode="presentation" type="button">簡報</button>
+        <div class="mode-switcher" aria-label="展覽範圍">
+          <button class="mode-button active" data-gallery-mode="all" type="button">全展</button>
+          <button class="mode-button" data-gallery-mode="category" type="button">分類展</button>
+          <button class="mode-button" data-gallery-mode="selection" type="button">自選展</button>
+          <button class="mode-button" data-gallery-mode="solo" type="button">獨展</button>
         </div>
       </div>
-      <div class="work-grid">
-        ${artworks.map((artwork, index) => `
-          <article class="work-card work-${index + 1}">
-            <div class="work-visual"><span>${String(index + 1).padStart(2, '0')}</span></div>
-            <div class="work-meta">
-              <div><h3>${artwork.data.title}</h3><p>${artwork.data.author}</p></div>
-              <button class="share-button" data-share="${artwork.id}" type="button" aria-label="分享${artwork.data.title}">分享 ↗</button>
-            </div>
-          </article>
-        `).join('')}
+      <div class="gallery-toolbar" aria-label="作品篩選與排序">
+        <label>排序方式
+          <select id="gallery-sort">
+            <option value="number">座號／序號</option>
+            <option value="category">分類</option>
+            <option value="importedAt">匯入時間</option>
+            <option value="popularity">人氣</option>
+            <option value="manual">手動順序</option>
+            <option value="title">作品名稱</option>
+          </select>
+        </label>
+        <label>方向
+          <select id="gallery-direction"><option value="ascending">正序</option><option value="descending">倒序</option></select>
+        </label>
+        <label id="number-type-control">號碼類型
+          <select id="gallery-number-type"><option value="seat">座號</option><option value="sequence">序號</option></select>
+        </label>
+        <label>作品分類
+          <select id="gallery-category"></select>
+        </label>
+        <p id="gallery-count" aria-live="polite"></p>
       </div>
+      <div class="work-grid" id="work-grid"></div>
+      <p class="gallery-empty" id="gallery-empty" hidden></p>
       <p class="share-state" id="share-state" aria-live="polite"></p>
     </section>
 
@@ -109,33 +150,152 @@ app.innerHTML = `
   <footer><span>Class3D Gallery v1.2</span><span>Architecture Preview · Local Data</span></footer>
 `;
 
-document.querySelectorAll<HTMLButtonElement>('.mode-button').forEach((button) => {
-  button.addEventListener('click', () => {
-    const mode = button.dataset.mode as DisplayMode;
-    setDisplayMode(mode);
-    document.querySelectorAll('.mode-button').forEach((item) => item.classList.remove('active'));
-    button.classList.add('active');
-  });
-});
-
-document.querySelectorAll<HTMLButtonElement>('.share-button').forEach((button) => {
-  button.addEventListener('click', async () => {
-    const url = generateArtworkURL(button.dataset.share ?? '');
-    const state = document.querySelector<HTMLParagraphElement>('#share-state');
-    try {
-      await navigator.clipboard.writeText(url);
-      if (state) state.textContent = `已複製作品連結：${url}`;
-    } catch {
-      if (state) state.textContent = `作品連結：${url}`;
-    }
-  });
-});
-
 const mediaStage = document.querySelector<HTMLElement>('#media-stage');
 const mediaInput = document.querySelector<HTMLInputElement>('#media-file-input');
 const mediaStatus = document.querySelector<HTMLElement>('#media-status');
 const mediaDropZone = document.querySelector<HTMLElement>('#media-drop-zone');
+const workGrid = document.querySelector<HTMLElement>('#work-grid');
+const galleryEmpty = document.querySelector<HTMLElement>('#gallery-empty');
+const galleryCount = document.querySelector<HTMLElement>('#gallery-count');
+const gallerySort = document.querySelector<HTMLSelectElement>('#gallery-sort');
+const galleryDirection = document.querySelector<HTMLSelectElement>('#gallery-direction');
+const galleryNumberType = document.querySelector<HTMLSelectElement>('#gallery-number-type');
+const galleryCategory = document.querySelector<HTMLSelectElement>('#gallery-category');
+const numberTypeControl = document.querySelector<HTMLElement>('#number-type-control');
+const artworkCount = document.querySelector<HTMLElement>('#artwork-count');
+const shareState = document.querySelector<HTMLElement>('#share-state');
+const gallery = new GalleryController(demoAssets);
+const renderables = new Map<string, RenderableAsset>();
+let importedOnce = false;
+let mediaViewer: ReturnType<typeof mountMediaViewer> | null = null;
+
+function categoryOptions(categories: string[], selected?: string) {
+  if (!galleryCategory) return;
+  galleryCategory.replaceChildren(...categories.map((category) => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    option.selected = category === selected;
+    return option;
+  }));
+}
+
+function cardForAsset(asset: AssetRecord, index: number, selected: boolean) {
+  const article = document.createElement('article');
+  article.className = `work-card work-${index % 3 + 1}`;
+  article.dataset.assetId = asset.id;
+  const visual = document.createElement('div');
+  visual.className = 'work-visual';
+  const number = document.createElement('span');
+  number.textContent = asset.displayNumber ? String(asset.displayNumber).padStart(2, '0') : '—';
+  const category = document.createElement('strong');
+  category.className = 'work-category';
+  category.textContent = asset.category;
+  const kind = document.createElement('small');
+  kind.className = 'work-kind';
+  kind.textContent = asset.kind.toUpperCase();
+  visual.append(number, category, kind);
+
+  const meta = document.createElement('div');
+  meta.className = 'work-meta';
+  const copy = document.createElement('div');
+  const title = document.createElement('h3');
+  title.textContent = asset.title;
+  const byline = document.createElement('p');
+  byline.textContent = [asset.author, `人氣 ${Math.round(popularityScore(asset))}`].filter(Boolean).join(' · ');
+  copy.append(title, byline);
+  const actions = document.createElement('div');
+  actions.className = 'work-actions';
+  const choose = document.createElement('label');
+  choose.className = 'selection-toggle';
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.checked = selected;
+  checkbox.setAttribute('aria-label', `選取 ${asset.title}`);
+  checkbox.addEventListener('change', () => gallery.toggleSelection(asset.id));
+  choose.append(checkbox, document.createTextNode(' 自選'));
+  const solo = document.createElement('button');
+  solo.type = 'button';
+  solo.textContent = '獨展';
+  solo.addEventListener('click', () => gallery.focusAsset(asset.id));
+  actions.append(choose, solo);
+  const renderable = renderables.get(asset.id);
+  if (renderable) {
+    const preview = document.createElement('button');
+    preview.type = 'button';
+    preview.textContent = '播放';
+    preview.addEventListener('click', () => {
+      if (mediaStatus) mediaStatus.textContent = `正在開啟 ${asset.title}…`;
+      void mediaViewer?.showAsset(renderable).then(() => {
+        if (renderable.kind !== 'model3d' && mediaStatus) mediaStatus.textContent = `正在展示 ${asset.title}，檔案只存在這個瀏覽器。`;
+      });
+      document.querySelector('#top')?.scrollIntoView({ behavior: 'smooth' });
+    });
+    actions.append(preview);
+  }
+  const share = document.createElement('button');
+  share.type = 'button';
+  share.textContent = '分享 ↗';
+  share.addEventListener('click', async () => {
+    const url = generateArtworkURL(asset.id);
+    try {
+      await navigator.clipboard.writeText(url);
+      if (shareState) shareState.textContent = `已複製作品連結：${url}`;
+    } catch {
+      if (shareState) shareState.textContent = `作品連結：${url}`;
+    }
+  });
+  actions.append(share);
+  meta.append(copy, actions);
+  article.append(visual, meta);
+  return article;
+}
+
+function renderGallery() {
+  if (!workGrid || !galleryEmpty || !galleryCount) return;
+  const state = gallery.getState();
+  const visible = gallery.getVisibleAssets();
+  const selected = new Set(state.selectedAssetIds);
+  workGrid.replaceChildren(...visible.map((asset, index) => cardForAsset(asset, index, selected.has(asset.id))));
+  galleryEmpty.hidden = visible.length > 0;
+  galleryEmpty.textContent = state.mode === 'selection' ? '尚未選取作品；請回到全展勾選要放入自選展的作品。' : '這個展覽範圍目前沒有作品。';
+  galleryCount.textContent = `顯示 ${visible.length} / ${gallery.getAssets().length} 件 · 已選 ${selected.size} 件`;
+  if (artworkCount) artworkCount.textContent = String(gallery.getAssets().length);
+  document.querySelectorAll<HTMLButtonElement>('[data-gallery-mode]').forEach((button) => button.classList.toggle('active', button.dataset.galleryMode === state.mode));
+  categoryOptions(gallery.getCategories(), state.category);
+  if (gallerySort) gallerySort.value = state.sort.key;
+  if (galleryDirection) galleryDirection.value = state.sort.direction;
+  if (galleryNumberType) galleryNumberType.value = state.sort.numberType ?? 'seat';
+  if (numberTypeControl) numberTypeControl.hidden = state.sort.key !== 'number';
+}
+
+function acceptImported(imported: ImportedMediaAsset[]) {
+  const current = importedOnce ? gallery.getAssets() : [];
+  if (!importedOnce) renderables.clear();
+  const offset = current.length;
+  imported.forEach(({ record, renderable }, index) => {
+    record.importOrder = offset + index;
+    record.manualOrder = offset + index;
+    renderables.set(record.id, renderable);
+  });
+  importedOnce = true;
+  gallery.setAssets([...current, ...imported.map((item) => item.record)]);
+  gallery.setMode('all');
+}
 
 if (mediaStage && mediaInput && mediaStatus && mediaDropZone) {
-  mountMediaViewer({ container: mediaStage, shell: mediaDropZone, input: mediaInput, status: mediaStatus });
+  mediaViewer = mountMediaViewer({ container: mediaStage, shell: mediaDropZone, input: mediaInput, status: mediaStatus, onImport: acceptImported });
 }
+
+document.querySelectorAll<HTMLButtonElement>('[data-gallery-mode]').forEach((button) => {
+  button.addEventListener('click', () => gallery.setMode(button.dataset.galleryMode as ExhibitionMode));
+});
+gallerySort?.addEventListener('change', () => {
+  const key = gallerySort.value as AssetSortKey;
+  const direction: SortDirection = ['popularity', 'importedAt'].includes(key) ? 'descending' : 'ascending';
+  gallery.setSort({ key, direction, ...(key === 'number' ? { numberType: galleryNumberType?.value as 'seat' | 'sequence' } : {}) });
+});
+galleryDirection?.addEventListener('change', () => gallery.setSort({ ...gallery.getState().sort, direction: galleryDirection.value as SortDirection }));
+galleryNumberType?.addEventListener('change', () => gallery.setSort({ key: 'number', direction: gallery.getState().sort.direction, numberType: galleryNumberType.value as 'seat' | 'sequence' }));
+galleryCategory?.addEventListener('change', () => gallery.setCategory(galleryCategory.value));
+gallery.subscribe(renderGallery);

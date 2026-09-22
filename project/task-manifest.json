@@ -71,7 +71,7 @@
       "weight": 12,
       "depends_on": ["P05-T01"],
       "task_doc": "project/tasks/P06-T01.md",
-      "outputs": ["src/gallery/galleryController.ts", "src/gallery/sort.ts"],
+      "outputs": ["src/gallery/galleryController.ts", "src/gallery/sort.ts", "tests/gallery.test.ts"],
       "acceptance": ["全展、分類展、自選展、獨展可切換", "座號、分類、匯入時間、人氣排序正確"]
     },
     {
