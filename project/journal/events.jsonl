@@ -24,3 +24,5 @@
 {"schema":"class3d-project-event-v1","revision":23,"event":"TASK_CHECKPOINTED","task":"P06-T01","status":"IN_PROGRESS","at":"2026-09-22T05:33:39.477Z","detail":"以 Chrome 匯入多件作品，驗證全展、分類展、自選展、獨展與五種排序切換"}
 {"schema":"class3d-project-event-v1","revision":24,"event":"TASK_CHECKPOINTED","task":"P06-T01","status":"VERIFYING","at":"2026-09-22T05:40:28.319Z","detail":"提交 P06 最終修正與驗證證據，推送後以 delivery commit 驗收"}
 {"schema":"class3d-project-event-v1","revision":25,"event":"TASK_ACCEPTED","task":"P07-T01","status":"PENDING","at":"2026-09-22T05:41:00.632Z","detail":"P06-T01 accepted at 493d2aa7f6092872ec37a203738a142a9d0b3bc5"}
+{"schema":"class3d-project-event-v1","revision":26,"event":"TASK_STARTED","task":"P07-T01","status":"IN_PROGRESS","at":"2026-09-22T06:15:05.204Z","detail":"P07-T01 started by huangjianzhe"}
+{"schema":"class3d-project-event-v1","revision":27,"event":"TASK_CHECKPOINTED","task":"P07-T01","status":"IN_PROGRESS","at":"2026-09-22T06:21:49.060Z","detail":"以 Chrome 編輯、即時預覽、保存並重新載入展覽標題與顯示選項，確認各展覽模式共用標題"}

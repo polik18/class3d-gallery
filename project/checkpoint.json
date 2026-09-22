@@ -1,38 +1,45 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 25,
+  "revision": 27,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P07",
   "current_task": "P07-T01",
-  "status": "PENDING",
+  "status": "IN_PROGRESS",
   "progress_percent": 72,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T05:41:00.632Z",
-  "base_commit": "5146ff2f7341aad1be1048f6ba2152d5f40fea82",
-  "delivery_commit": "493d2aa7f6092872ec37a203738a142a9d0b3bc5",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T06:15:05.204Z",
+  "updated_at": "2026-09-22T06:21:49.060Z",
+  "base_commit": "adf5acfb70a0ad0e7162e5990dcae9df431a5b96",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T06:15:05.204Z",
+    "heartbeat_at": "2026-09-22T06:21:49.060Z",
+    "expires_at": "2026-09-22T06:51:49.060Z"
+  },
+  "expected_files": [
+    "src/exhibition/settings.ts",
+    "src/exhibition/settingsView.ts",
+    "tests/settings.test.ts",
+    "src/exhibition/types.ts",
+    "src/main.ts"
+  ],
   "last_verified": {
-    "commit": "01eeebc004d58b1e737d186e3ebcba6027cbb8e8",
+    "commit": "adf5acfb70a0ad0e7162e5990dcae9df431a5b96",
     "commands": [
-      "npm test",
+      "npm run test:settings",
       "npm run check",
-      "npm run build",
-      "npm run project:validate",
-      "git diff --check",
-      "Chrome headless gallery modes smoke test",
-      "Chrome headless 390px responsive smoke test"
+      "npm run build"
     ],
-    "result": "PASS",
+    "result": "PARTIAL_PASS",
     "evidence": [
       "project/evidence/P06-T01/verification.json",
       "project/evidence/P06-T01/gallery-modes.png"
     ]
   },
-  "next_step": "執行 npm run task:start -- P07-T01",
+  "next_step": "以 Chrome 編輯、即時預覽、保存並重新載入展覽標題與顯示選項，確認各展覽模式共用標題",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -42,7 +49,7 @@
     "P04-T01": "ACCEPTED",
     "P05-T01": "ACCEPTED",
     "P06-T01": "ACCEPTED",
-    "P07-T01": "PENDING",
+    "P07-T01": "IN_PROGRESS",
     "P08-T01": "PENDING",
     "P09-T01": "PENDING",
     "P10-T01": "PENDING",

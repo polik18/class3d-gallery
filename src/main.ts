@@ -5,6 +5,9 @@ import { calculateDashboard } from './dashboard/dashboard';
 import type { AssetRecord, AssetSortKey, SortDirection } from './assets/types';
 import { createAssetRecord } from './assets/types';
 import type { ExhibitionMode } from './exhibition/types';
+import type { ExhibitionSettings } from './exhibition/types';
+import { ExhibitionSettingsStore } from './exhibition/settings';
+import { mountSettingsView } from './exhibition/settingsView';
 import { GalleryController } from './gallery/galleryController';
 import { popularityScore } from './gallery/sort';
 import { generateArtworkURL } from './qrcode/share';
@@ -58,15 +61,21 @@ app.innerHTML = `
       <span class="brand-mark">C3</span>
       <span>Class3D <strong>Gallery</strong></span>
     </a>
-    <div class="user-chip"><span class="online-dot"></span>${user.name} · ${user.role === 'teacher' ? '教師模式' : '學生模式'}</div>
+    <div class="topbar-actions">
+      <span class="topbar-exhibition-title" id="topbar-exhibition-title">我的多媒體展覽</span>
+      <button class="settings-button" id="open-settings" type="button">展覽設定</button>
+      <div class="user-chip"><span class="online-dot"></span>${user.name} · ${user.role === 'teacher' ? '教師模式' : '學生模式'}</div>
+    </div>
   </header>
 
   <main id="top">
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow">CLASSROOMS BECOME GALLERIES</p>
-        <h1 id="hero-title">讓每一件作品，<br /><em>擁有自己的空間。</em></h1>
-        <p class="hero-intro">從電腦選擇圖片、影片、音訊、PDF 或 3D 作品，直接在瀏覽器裡展示。3D 可旋轉、縮放、平移與播放模型動畫，檔案不會上傳到任何伺服器。</p>
+        <h1 id="hero-title">我的多媒體展覽</h1>
+        <p class="exhibition-subtitle" id="exhibition-subtitle"></p>
+        <p class="hero-intro" id="exhibition-description">從電腦選擇圖片、影片、音訊、PDF 或 3D 作品，直接在瀏覽器裡展示。3D 可旋轉、縮放、平移與播放模型動畫，檔案不會上傳到任何伺服器。</p>
+        <p class="exhibition-byline" id="exhibition-byline"></p>
         <div class="hero-actions">
           <label class="primary-button model-upload-button" for="media-file-input">
             選擇多媒體作品
@@ -93,13 +102,13 @@ app.innerHTML = `
       <div class="stats" aria-label="內容統計">
         <article><strong>${stats.classes}</strong><span>班級</span></article>
         <article><strong>${stats.students}</strong><span>學生</span></article>
-        <article><strong id="artwork-count">${stats.artworks}</strong><span>作品</span></article>
+        <article id="artwork-count-stat"><strong id="artwork-count">${stats.artworks}</strong><span>作品</span></article>
       </div>
     </section>
 
     <section class="works-section" id="works" aria-labelledby="works-title">
       <div class="section-heading">
-        <div><p class="section-index">02 / EXHIBITION</p><h2 id="works-title">本週精選作品</h2></div>
+        <div><p class="section-index">02 / EXHIBITION</p><h2 id="works-title">我的多媒體展覽 · 作品</h2></div>
         <div class="mode-switcher" aria-label="展覽範圍">
           <button class="mode-button active" data-gallery-mode="all" type="button">全展</button>
           <button class="mode-button" data-gallery-mode="category" type="button">分類展</button>
@@ -147,6 +156,10 @@ app.innerHTML = `
 
   <a class="portfolio-home-link" href="https://polik18.github.io/" aria-label="回到 Polik 專案總覽">← 回專案總覽</a>
 
+  <dialog class="settings-dialog" id="settings-dialog" aria-label="展覽設定">
+    <div id="settings-view"></div>
+  </dialog>
+
   <footer><span>Class3D Gallery v1.2</span><span>Architecture Preview · Local Data</span></footer>
 `;
 
@@ -163,11 +176,46 @@ const galleryNumberType = document.querySelector<HTMLSelectElement>('#gallery-nu
 const galleryCategory = document.querySelector<HTMLSelectElement>('#gallery-category');
 const numberTypeControl = document.querySelector<HTMLElement>('#number-type-control');
 const artworkCount = document.querySelector<HTMLElement>('#artwork-count');
+const artworkCountStat = document.querySelector<HTMLElement>('#artwork-count-stat');
 const shareState = document.querySelector<HTMLElement>('#share-state');
+const heroTitle = document.querySelector<HTMLElement>('#hero-title');
+const exhibitionSubtitle = document.querySelector<HTMLElement>('#exhibition-subtitle');
+const exhibitionDescription = document.querySelector<HTMLElement>('#exhibition-description');
+const exhibitionByline = document.querySelector<HTMLElement>('#exhibition-byline');
+const topbarExhibitionTitle = document.querySelector<HTMLElement>('#topbar-exhibition-title');
+const worksTitle = document.querySelector<HTMLElement>('#works-title');
+const settingsDialog = document.querySelector<HTMLDialogElement>('#settings-dialog');
+const settingsViewContainer = document.querySelector<HTMLElement>('#settings-view');
+const openSettingsButton = document.querySelector<HTMLButtonElement>('#open-settings');
 const gallery = new GalleryController(demoAssets);
 const renderables = new Map<string, RenderableAsset>();
 let importedOnce = false;
 let mediaViewer: ReturnType<typeof mountMediaViewer> | null = null;
+let currentExhibitionSettings: ExhibitionSettings | null = null;
+
+function applyExhibitionSettings(settings: ExhibitionSettings) {
+  currentExhibitionSettings = settings;
+  const defaultDescription = '從電腦選擇圖片、影片、音訊、PDF 或 3D 作品，直接在瀏覽器裡展示。3D 可旋轉、縮放、平移與播放模型動畫，檔案不會上傳到任何伺服器。';
+  if (heroTitle) heroTitle.textContent = settings.title;
+  if (topbarExhibitionTitle) topbarExhibitionTitle.textContent = settings.title;
+  if (worksTitle) worksTitle.textContent = `${settings.title} · 作品`;
+  if (exhibitionSubtitle) {
+    exhibitionSubtitle.textContent = settings.subtitle;
+    exhibitionSubtitle.hidden = !settings.display.showSubtitle || !settings.subtitle;
+  }
+  if (exhibitionDescription) {
+    exhibitionDescription.textContent = settings.description || defaultDescription;
+    exhibitionDescription.hidden = !settings.display.showDescription;
+  }
+  if (exhibitionByline) {
+    exhibitionByline.textContent = [settings.className, settings.curator ? `策展：${settings.curator}` : ''].filter(Boolean).join(' · ');
+    exhibitionByline.hidden = !settings.display.showCurator || !exhibitionByline.textContent;
+  }
+  if (artworkCountStat) artworkCountStat.hidden = !settings.display.showArtworkCount;
+  if (galleryCount) galleryCount.hidden = !settings.display.showArtworkCount;
+  document.body.dataset.showCategories = String(settings.display.showCategories);
+  document.title = `${settings.title} | Class3D Gallery`;
+}
 
 function categoryOptions(categories: string[], selected?: string) {
   if (!galleryCategory) return;
@@ -299,3 +347,21 @@ galleryDirection?.addEventListener('change', () => gallery.setSort({ ...gallery.
 galleryNumberType?.addEventListener('change', () => gallery.setSort({ key: 'number', direction: gallery.getState().sort.direction, numberType: galleryNumberType.value as 'seat' | 'sequence' }));
 galleryCategory?.addEventListener('change', () => gallery.setCategory(galleryCategory.value));
 gallery.subscribe(renderGallery);
+
+if (settingsDialog && settingsViewContainer && openSettingsButton) {
+  const settingsStore = new ExhibitionSettingsStore();
+  const settingsView = mountSettingsView({
+    container: settingsViewContainer,
+    store: settingsStore,
+    onApply: applyExhibitionSettings,
+    onClose: () => settingsDialog.close()
+  });
+  openSettingsButton.addEventListener('click', () => {
+    settingsView.reload();
+    settingsDialog.showModal();
+  });
+  settingsDialog.addEventListener('click', (event) => {
+    if (event.target === settingsDialog) settingsDialog.close();
+  });
+  settingsDialog.addEventListener('close', () => settingsView.reload());
+}

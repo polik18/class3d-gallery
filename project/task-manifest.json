@@ -81,7 +81,7 @@
       "weight": 6,
       "depends_on": ["P06-T01"],
       "task_doc": "project/tasks/P07-T01.md",
-      "outputs": ["src/exhibition/settings.ts", "src/exhibition/settingsView.ts"],
+      "outputs": ["src/exhibition/settings.ts", "src/exhibition/settingsView.ts", "tests/settings.test.ts"],
       "acceptance": ["標題、副標題與介紹可編輯保存", "所有展示模式顯示展覽標題"]
     },
     {

@@ -21,6 +21,14 @@ export interface AutoShowcaseSettings {
   videoMaxDurationMs: number;
 }
 
+export interface ExhibitionDisplaySettings {
+  showSubtitle: boolean;
+  showDescription: boolean;
+  showCurator: boolean;
+  showArtworkCount: boolean;
+  showCategories: boolean;
+}
+
 export interface ExhibitionSettings {
   schema: 'class3d-exhibition-v1';
   id: string;
@@ -28,12 +36,14 @@ export interface ExhibitionSettings {
   subtitle: string;
   description: string;
   curator: string;
+  className: string;
   startDate?: string;
   endDate?: string;
   createdAt: number;
   updatedAt: number;
   engagement: EngagementSettings;
   autoShowcase: AutoShowcaseSettings;
+  display: ExhibitionDisplaySettings;
 }
 
 export interface GalleryState {
@@ -68,7 +78,7 @@ export const DEFAULT_AUTO_SHOWCASE: AutoShowcaseSettings = {
 };
 
 export function createExhibitionSettings(
-  input: Partial<Pick<ExhibitionSettings, 'id' | 'title' | 'subtitle' | 'description' | 'curator'>> = {},
+  input: Partial<Pick<ExhibitionSettings, 'id' | 'title' | 'subtitle' | 'description' | 'curator' | 'className'>> = {},
   now = Date.now()
 ): ExhibitionSettings {
   return {
@@ -78,6 +88,7 @@ export function createExhibitionSettings(
     subtitle: input.subtitle?.trim() || '',
     description: input.description?.trim() || '',
     curator: input.curator?.trim() || '',
+    className: input.className?.trim() || '',
     createdAt: now,
     updatedAt: now,
     engagement: {
@@ -86,7 +97,14 @@ export function createExhibitionSettings(
       commentModeration: true,
       showPopularity: true
     },
-    autoShowcase: { ...DEFAULT_AUTO_SHOWCASE }
+    autoShowcase: { ...DEFAULT_AUTO_SHOWCASE },
+    display: {
+      showSubtitle: true,
+      showDescription: true,
+      showCurator: true,
+      showArtworkCount: true,
+      showCategories: true
+    }
   };
 }
 
@@ -103,12 +121,21 @@ function validatePositiveDuration(name: string, value: unknown) {
 }
 
 export function parseExhibitionSettings(serialized: string): ExhibitionSettings {
-  const value = JSON.parse(serialized) as Partial<ExhibitionSettings>;
+  const parsed = JSON.parse(serialized) as Partial<ExhibitionSettings>;
+  const defaults = createExhibitionSettings({ id: typeof parsed.id === 'string' ? parsed.id : undefined }, 0);
+  const value: Partial<ExhibitionSettings> = {
+    ...defaults,
+    ...parsed,
+    engagement: { ...defaults.engagement, ...parsed.engagement },
+    autoShowcase: { ...defaults.autoShowcase, ...parsed.autoShowcase },
+    display: { ...defaults.display, ...parsed.display },
+    className: typeof parsed.className === 'string' ? parsed.className : ''
+  };
   if (value.schema !== 'class3d-exhibition-v1') throw new Error('Invalid exhibition schema');
   if (typeof value.id !== 'string' || !value.id) throw new Error('Invalid exhibition id');
   if (typeof value.title !== 'string' || !value.title.trim()) throw new Error('Exhibition title is required');
   if (!Number.isFinite(value.createdAt) || !Number.isFinite(value.updatedAt)) throw new Error('Invalid exhibition timestamps');
-  if (!value.engagement || !value.autoShowcase) throw new Error('Incomplete exhibition settings');
+  if (!value.engagement || !value.autoShowcase || !value.display) throw new Error('Incomplete exhibition settings');
   for (const key of [
     'idleDelayMs',
     'titleDurationMs',
