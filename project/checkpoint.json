@@ -1,7 +1,7 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 45,
+  "revision": 46,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P11",
@@ -10,9 +10,9 @@
   "progress_percent": 100,
   "owner": null,
   "started_at": "2026-09-22T09:33:27.550Z",
-  "updated_at": "2026-09-22T09:49:11.202Z",
+  "updated_at": "2026-09-22T14:36:27.094Z",
   "base_commit": "2afe2bc76933729f6f929d011b3860e4c768a8e9",
-  "delivery_commit": "1a0a177f24ec08dd6560bf62c0020a3905e258a5",
+  "delivery_commit": "e469f34b85b88b170e78bc1878c5dbbbb7c5a1b2",
   "lease": null,
   "expected_files": [
     "README.md",
@@ -21,26 +21,28 @@
     "src/main.ts"
   ],
   "last_verified": {
-    "commit": "33f5ebd4579c3d0764bdeabad21cb3548b4eb29c",
+    "commit": "e469f34b85b88b170e78bc1878c5dbbbb7c5a1b2",
     "commands": [
       "npm test",
       "npm run check",
       "npm run build",
       "npm run project:validate",
       "git diff --check",
+      "node project/evidence/P10-T01/smoke.mjs",
       "node project/evidence/P11-T01/browser-smoke.mjs",
-      "GitHub Pages workflow 35712138595",
-      "Online five-media smoke test"
+      "GitHub Pages workflow 35741043116",
+      "Online five-card-preview smoke test"
     ],
     "result": "PASS",
     "evidence": [
+      "project/evidence/P10-T01/large-gallery.png",
       "project/evidence/P11-T01/verification.json",
       "project/evidence/P11-T01/local-mixed-media.png",
       "project/evidence/P11-T01/online-mixed-media.png",
       "project/evidence/P11-T01/class3d-gallery.c3dg"
     ]
   },
-  "next_step": "所有計畫任務已完成；執行最終發布確認",
+  "next_step": "Post-release gallery card preview defect fixed, verified and published; await visitor feedback",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",

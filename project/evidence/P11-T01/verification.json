@@ -1,8 +1,8 @@
 {
   "task": "P11-T01",
-  "verified_at": "2026-09-22T09:47:00.000Z",
+  "verified_at": "2026-09-22T14:34:30.000Z",
   "result": "PASS",
-  "release_commit": "33f5ebd4579c3d0764bdeabad21cb3548b4eb29c",
+  "release_commit": "e469f34b85b88b170e78bc1878c5dbbbb7c5a1b2",
   "public_url": "https://polik18.github.io/class3d-gallery/",
   "commands": [
     {
@@ -33,30 +33,31 @@
     {
       "command": "node project/evidence/P11-T01/browser-smoke.mjs",
       "exit_code": 0,
-      "summary": "Local release candidate displayed image, video, audio, PDF and 3D; IndexedDB save/reload and archive download passed"
+      "summary": "Local release candidate displayed image, video, audio, PDF and 3D both inside every gallery card and in the main stage; IndexedDB save/reload and archive download passed"
     },
     {
       "command": "APP_URL=https://polik18.github.io/class3d-gallery/ EVIDENCE_PREFIX=online node project/evidence/P11-T01/browser-smoke.mjs",
       "exit_code": 0,
-      "summary": "Published GitHub Pages site passed the same five-media, IndexedDB reload, archive and zero-upload smoke test"
+      "summary": "Published GitHub Pages site passed the same five-card-preview, main-stage, IndexedDB reload, archive and zero-upload smoke test"
     }
   ],
   "deployment": {
     "workflow": "Deploy Vite site to Pages",
-    "run_id": 35712138595,
-    "run_url": "https://github.com/polik18/class3d-gallery/actions/runs/35712138595",
-    "head_sha": "33f5ebd4579c3d0764bdeabad21cb3548b4eb29c",
+    "run_id": 35741043116,
+    "run_url": "https://github.com/polik18/class3d-gallery/actions/runs/35741043116",
+    "head_sha": "e469f34b85b88b170e78bc1878c5dbbbb7c5a1b2",
     "status": "completed",
     "conclusion": "success",
-    "started_at": "2026-09-22T09:45:00Z",
-    "completed_at": "2026-09-22T09:45:33Z",
+    "started_at": "2026-09-22T14:32:41Z",
+    "completed_at": "2026-09-22T14:34:57Z",
     "page_http_status": 200,
-    "deployed_js": "assets/index-DQe77Smv.js",
-    "deployed_css": "assets/index-Bgdd1psQ.css"
+    "deployed_js": "assets/index-BftBHiHE.js",
+    "deployed_css": "assets/index-CyW8IZdQ.css"
   },
   "online_browser": {
     "media": ["image", "video", "audio", "pdf", "model3d"],
     "cards": 5,
+    "card_previews": ["image", "video", "audio", "pdf", "model3d"],
     "indexed_db_save_and_reload": true,
     "archive_downloaded": true,
     "upload_requests": 0,
@@ -68,7 +69,9 @@
     "main_updated": true,
     "github_pages_deployed": true,
     "online_mixed_media_smoke_passed": true,
-    "browser_local_persistence_available": true
+    "browser_local_persistence_available": true,
+    "gallery_cards_show_real_media": true,
+    "large_gallery_lazy_preview_release_verified": true
   },
   "evidence": [
     "project/evidence/P11-T01/local-mixed-media.png",
