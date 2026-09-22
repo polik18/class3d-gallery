@@ -1,0 +1,41 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P01-T01",
+  "verified_at": "2026-09-22T11:27:42+08:00",
+  "base_commit": "9f45e45d74d37914b73e54f93e26de5cb4348b93",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "9 project-state tests and 7 domain model tests passed"
+    },
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "summary": "TypeScript strict check passed"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "Vite production build passed; existing bundle-size warning remains non-blocking"
+    },
+    {
+      "command": "npm run project:validate",
+      "exit_code": 0,
+      "summary": "Project checkpoint and manifest remain consistent"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "No whitespace errors"
+    }
+  ],
+  "acceptance": {
+    "asset_record_contract": true,
+    "exhibition_settings_contract": true,
+    "filename_default_description": true,
+    "serialization_round_trip": true,
+    "invalid_payload_rejection": true
+  }
+}

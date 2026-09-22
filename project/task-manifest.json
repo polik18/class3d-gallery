@@ -21,7 +21,7 @@
       "weight": 8,
       "depends_on": ["P00-T01"],
       "task_doc": "project/tasks/P01-T01.md",
-      "outputs": ["src/assets/types.ts", "src/exhibition/types.ts"],
+      "outputs": ["src/assets/types.ts", "src/exhibition/types.ts", "tests/domain.test.ts"],
       "acceptance": ["作品與展覽 schema 完整", "序列化與還原測試通過"]
     },
     {

@@ -1,22 +1,31 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 4,
+  "revision": 6,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P01",
   "current_task": "P01-T01",
-  "status": "PENDING",
+  "status": "VERIFYING",
   "progress_percent": 8,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T03:23:02.648Z",
-  "base_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
-  "delivery_commit": "1e3f6c4426238b70755c997562d8c920c1bfab02",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T03:23:43.282Z",
+  "updated_at": "2026-09-22T03:28:22.957Z",
+  "base_commit": "9f45e45d74d37914b73e54f93e26de5cb4348b93",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T03:23:43.282Z",
+    "heartbeat_at": "2026-09-22T03:28:22.957Z",
+    "expires_at": "2026-09-22T03:58:22.957Z"
+  },
+  "expected_files": [
+    "src/assets/types.ts",
+    "src/exhibition/types.ts",
+    "tests/domain.test.ts"
+  ],
   "last_verified": {
-    "commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
+    "commit": "9f45e45d74d37914b73e54f93e26de5cb4348b93",
     "commands": [
       "npm test",
       "npm run check",
@@ -26,14 +35,14 @@
     ],
     "result": "PASS",
     "evidence": [
-      "project/evidence/P00-T01/verification.json"
+      "project/evidence/P01-T01/verification.json"
     ]
   },
-  "next_step": "執行 npm run task:start -- P01-T01",
+  "next_step": "提交 P01-T01 資料模型與驗證證據，取得 delivery commit",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
-    "P01-T01": "PENDING",
+    "P01-T01": "VERIFYING",
     "P02-T01": "PENDING",
     "P03-T01": "PENDING",
     "P04-T01": "PENDING",

@@ -3,3 +3,5 @@
 {"schema":"class3d-project-event-v1","revision":2,"event":"TASK_CHECKPOINTED","task":"P00-T01","status":"VERIFYING","at":"2026-09-22T03:20:19.755Z","detail":"提交 P00-T01 功能與驗證證據，取得 delivery commit"}
 {"schema":"class3d-project-event-v1","revision":3,"event":"TASK_CHECKPOINTED","task":"P00-T01","status":"VERIFYING","at":"2026-09-22T03:22:36.546Z","detail":"提交 P00-T01（含並行寫入鎖與 9 項測試），取得 delivery commit"}
 {"schema":"class3d-project-event-v1","revision":4,"event":"TASK_ACCEPTED","task":"P01-T01","status":"PENDING","at":"2026-09-22T03:23:02.648Z","detail":"P00-T01 accepted at 1e3f6c4426238b70755c997562d8c920c1bfab02"}
+{"schema":"class3d-project-event-v1","revision":5,"event":"TASK_STARTED","task":"P01-T01","status":"IN_PROGRESS","at":"2026-09-22T03:23:43.282Z","detail":"P01-T01 started by huangjianzhe"}
+{"schema":"class3d-project-event-v1","revision":6,"event":"TASK_CHECKPOINTED","task":"P01-T01","status":"VERIFYING","at":"2026-09-22T03:28:22.957Z","detail":"提交 P01-T01 資料模型與驗證證據，取得 delivery commit"}
