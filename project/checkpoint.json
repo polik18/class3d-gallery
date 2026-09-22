@@ -1,7 +1,7 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 46,
+  "revision": 47,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P11",
@@ -10,9 +10,9 @@
   "progress_percent": 100,
   "owner": null,
   "started_at": "2026-09-22T09:33:27.550Z",
-  "updated_at": "2026-09-22T14:36:27.094Z",
+  "updated_at": "2026-09-22T15:08:11.813Z",
   "base_commit": "2afe2bc76933729f6f929d011b3860e4c768a8e9",
-  "delivery_commit": "e469f34b85b88b170e78bc1878c5dbbbb7c5a1b2",
+  "delivery_commit": "44af1580153b4e8ac42f7aeb9024947d75e3e832",
   "lease": null,
   "expected_files": [
     "README.md",
@@ -21,28 +21,31 @@
     "src/main.ts"
   ],
   "last_verified": {
-    "commit": "e469f34b85b88b170e78bc1878c5dbbbb7c5a1b2",
+    "commit": "44af1580153b4e8ac42f7aeb9024947d75e3e832",
     "commands": [
       "npm test",
       "npm run check",
       "npm run build",
       "npm run project:validate",
       "git diff --check",
+      "node project/evidence/P09-T01/smoke.mjs",
       "node project/evidence/P10-T01/smoke.mjs",
       "node project/evidence/P11-T01/browser-smoke.mjs",
-      "GitHub Pages workflow 35741043116",
-      "Online five-card-preview smoke test"
+      "GitHub Pages workflow 35744714889",
+      "Online configurable exhibition smoke test"
     ],
     "result": "PASS",
     "evidence": [
+      "project/evidence/P09-T01/auto-carousel.png",
+      "project/evidence/P09-T01/auto-overview.png",
       "project/evidence/P10-T01/large-gallery.png",
       "project/evidence/P11-T01/verification.json",
-      "project/evidence/P11-T01/local-mixed-media.png",
-      "project/evidence/P11-T01/online-mixed-media.png",
-      "project/evidence/P11-T01/class3d-gallery.c3dg"
+      "project/evidence/P11-T01/manual-multiple-exhibition.png",
+      "project/evidence/P11-T01/manual-single-exhibition.png",
+      "project/evidence/P11-T01/online-mixed-media.png"
     ]
   },
-  "next_step": "Post-release gallery card preview defect fixed, verified and published; await visitor feedback",
+  "next_step": "Configurable start-exhibition player published; await visitor feedback",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
