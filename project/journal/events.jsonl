@@ -16,3 +16,5 @@
 {"schema":"class3d-project-event-v1","revision":15,"event":"TASK_CHECKPOINTED","task":"P04-T01","status":"IN_PROGRESS","at":"2026-09-22T04:20:29.595Z","detail":"執行 P04 全套 npm test、build、瀏覽器 IndexedDB smoke test，建立 verification evidence 後驗收"}
 {"schema":"class3d-project-event-v1","revision":16,"event":"TASK_CHECKPOINTED","task":"P04-T01","status":"VERIFYING","at":"2026-09-22T04:31:56.853Z","detail":"提交 P04 功能與驗證證據，推送後以 delivery commit 驗收"}
 {"schema":"class3d-project-event-v1","revision":17,"event":"TASK_ACCEPTED","task":"P05-T01","status":"PENDING","at":"2026-09-22T04:32:49.633Z","detail":"P04-T01 accepted at 9c58e7c20c7ae18feed1de36531f2b5570d0b4b5"}
+{"schema":"class3d-project-event-v1","revision":18,"event":"TASK_STARTED","task":"P05-T01","status":"IN_PROGRESS","at":"2026-09-22T04:48:33.470Z","detail":"P05-T01 started by huangjianzhe"}
+{"schema":"class3d-project-event-v1","revision":19,"event":"TASK_CHECKPOINTED","task":"P05-T01","status":"IN_PROGRESS","at":"2026-09-22T05:03:17.944Z","detail":"以 Chrome 依序驗證圖片、影片、音訊、PDF、嵌入式 GLTF，確認切換釋放 Object URL 與 3D 操作"}

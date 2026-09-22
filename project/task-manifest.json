@@ -61,7 +61,7 @@
       "weight": 16,
       "depends_on": ["P04-T01"],
       "task_doc": "project/tasks/P05-T01.md",
-      "outputs": ["src/renderers/", "src/exhibition/modelViewer.ts"],
+      "outputs": ["src/renderers/", "src/exhibition/modelViewer.ts", "tests/renderers.test.ts"],
       "acceptance": ["圖片、影片、音訊、PDF、3D 可展示", "離開焦點後停止並釋放資源"]
     },
     {

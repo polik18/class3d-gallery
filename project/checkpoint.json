@@ -1,36 +1,48 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 17,
+  "revision": 19,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P05",
   "current_task": "P05-T01",
-  "status": "PENDING",
+  "status": "IN_PROGRESS",
   "progress_percent": 44,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T04:32:49.633Z",
-  "base_commit": "37a3525e101b4a30e88509950d2608e2a81be7fc",
-  "delivery_commit": "9c58e7c20c7ae18feed1de36531f2b5570d0b4b5",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T04:48:33.470Z",
+  "updated_at": "2026-09-22T05:03:17.944Z",
+  "base_commit": "5b5dae7f85faa832bf3949569298454cf39614dd",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T04:48:33.470Z",
+    "heartbeat_at": "2026-09-22T05:03:17.944Z",
+    "expires_at": "2026-09-22T05:33:17.944Z"
+  },
+  "expected_files": [
+    "src/renderers/",
+    "src/exhibition/modelViewer.ts",
+    "src/renderers/types.ts",
+    "src/renderers/objectUrls.ts",
+    "src/renderers/session.ts",
+    "src/renderers/native.ts",
+    "src/renderers/model3d.ts",
+    "src/renderers/registry.ts",
+    "src/renderers/mediaViewer.ts",
+    "tests/renderers.test.ts"
+  ],
   "last_verified": {
-    "commit": "3b66c395b8c51ffd361f627a458c3d421a0ffd3b",
+    "commit": "5b5dae7f85faa832bf3949569298454cf39614dd",
     "commands": [
-      "npm test",
-      "npm run check",
-      "npm run build",
-      "npm run project:validate",
-      "git diff --check",
-      "Chrome headless IndexedDB smoke test"
+      "npm run test:renderers",
+      "npm run check"
     ],
-    "result": "PASS",
+    "result": "PARTIAL_PASS",
     "evidence": [
       "project/evidence/P04-T01/verification.json"
     ]
   },
-  "next_step": "執行 npm run task:start -- P05-T01",
+  "next_step": "以 Chrome 依序驗證圖片、影片、音訊、PDF、嵌入式 GLTF，確認切換釋放 Object URL 與 3D 操作",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
@@ -38,7 +50,7 @@
     "P02-T01": "ACCEPTED",
     "P03-T01": "ACCEPTED",
     "P04-T01": "ACCEPTED",
-    "P05-T01": "PENDING",
+    "P05-T01": "IN_PROGRESS",
     "P06-T01": "PENDING",
     "P07-T01": "PENDING",
     "P08-T01": "PENDING",

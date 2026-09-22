@@ -3,8 +3,8 @@ import { createGuestUser } from './backend/auth';
 import type { CloudRecord } from './backend/database';
 import { calculateDashboard } from './dashboard/dashboard';
 import { setDisplayMode, type DisplayMode } from './exhibition/displayMode';
-import { mountModelViewer } from './exhibition/modelViewer';
 import { generateArtworkURL } from './qrcode/share';
+import { mountMediaViewer } from './renderers/mediaViewer';
 import { createProfile } from './student/profile';
 
 const records: CloudRecord[] = [
@@ -39,27 +39,22 @@ app.innerHTML = `
       <div class="hero-copy">
         <p class="eyebrow">CLASSROOMS BECOME GALLERIES</p>
         <h1 id="hero-title">讓每一件作品，<br /><em>擁有自己的空間。</em></h1>
-        <p class="hero-intro">從電腦選擇 3D 作品，直接在瀏覽器裡旋轉、縮放、平移與播放模型動畫。檔案不會上傳到任何伺服器。</p>
+        <p class="hero-intro">從電腦選擇圖片、影片、音訊、PDF 或 3D 作品，直接在瀏覽器裡展示。3D 可旋轉、縮放、平移與播放模型動畫，檔案不會上傳到任何伺服器。</p>
         <div class="hero-actions">
           <label class="primary-button model-upload-button" for="model-file-input">
-            選擇 3D 檔案
-            <input id="model-file-input" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" multiple />
+            選擇多媒體作品
+            <input id="media-file-input" type="file" accept="image/*,video/*,audio/*,application/pdf,.glb,.gltf,model/gltf-binary,model/gltf+json" multiple />
           </label>
           <a class="text-link" href="#works">瀏覽示範作品 <span>↓</span></a>
         </div>
-        <p class="upload-help">建議使用單一 GLB；GLTF 請連同它引用的 BIN 與貼圖一起選取。</p>
-        <p class="sync-state" id="model-status" aria-live="polite">可選取檔案或直接拖放到右側展台。</p>
+        <p class="upload-help">可一次選取多個檔案；GLTF 請連同它引用的 BIN 與貼圖一起選取。</p>
+        <p class="sync-state" id="media-status" aria-live="polite">可選取檔案或直接拖放到右側展台。</p>
       </div>
-      <div class="scene-shell" id="model-drop-zone" aria-label="互動式 3D 模型展台，可拖放 GLB 或 GLTF 檔案">
-        <canvas id="gallery-scene" tabindex="0" aria-label="3D 模型操作區"></canvas>
-        <span class="scene-label">INTERACTIVE 3D VIEWER</span>
-        <div class="viewer-toolbar" aria-label="3D 檢視控制">
-          <button id="reset-view" type="button">重設視角</button>
-          <button id="auto-rotate" type="button" aria-pressed="false">自動旋轉</button>
-          <button id="toggle-animation" type="button" aria-pressed="false" disabled>播放動畫</button>
+      <div class="scene-shell" id="media-drop-zone" aria-label="互動式多媒體展台，可拖放圖片、影片、音訊、PDF 或 3D 檔案">
+        <div class="media-stage" id="media-stage">
+          <div class="stage-placeholder" aria-hidden="true"><span>IMAGE</span><span>VIDEO</span><span>3D</span><strong>DROP TO EXHIBIT</strong></div>
         </div>
-        <span class="scene-hint">左鍵旋轉 · 滾輪縮放 · 右鍵平移</span>
-        <span class="drop-hint">放開以載入 3D 作品</span>
+        <span class="drop-hint">放開以載入作品</span>
       </div>
     </section>
 
@@ -136,22 +131,11 @@ document.querySelectorAll<HTMLButtonElement>('.share-button').forEach((button) =
   });
 });
 
-const sceneCanvas = document.querySelector<HTMLCanvasElement>('#gallery-scene');
-const modelInput = document.querySelector<HTMLInputElement>('#model-file-input');
-const modelStatus = document.querySelector<HTMLElement>('#model-status');
-const dropZone = document.querySelector<HTMLElement>('#model-drop-zone');
-const resetView = document.querySelector<HTMLButtonElement>('#reset-view');
-const autoRotate = document.querySelector<HTMLButtonElement>('#auto-rotate');
-const toggleAnimation = document.querySelector<HTMLButtonElement>('#toggle-animation');
+const mediaStage = document.querySelector<HTMLElement>('#media-stage');
+const mediaInput = document.querySelector<HTMLInputElement>('#media-file-input');
+const mediaStatus = document.querySelector<HTMLElement>('#media-status');
+const mediaDropZone = document.querySelector<HTMLElement>('#media-drop-zone');
 
-if (sceneCanvas && modelInput && modelStatus && dropZone && resetView && autoRotate && toggleAnimation) {
-  mountModelViewer({
-    canvas: sceneCanvas,
-    shell: dropZone,
-    input: modelInput,
-    status: modelStatus,
-    resetButton: resetView,
-    autoRotateButton: autoRotate,
-    animationButton: toggleAnimation
-  });
+if (mediaStage && mediaInput && mediaStatus && mediaDropZone) {
+  mountMediaViewer({ container: mediaStage, shell: mediaDropZone, input: mediaInput, status: mediaStatus });
 }
