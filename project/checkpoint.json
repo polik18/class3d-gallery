@@ -1,0 +1,58 @@
+{
+  "schema": "class3d-checkpoint-v1",
+  "project": "class3d-gallery-v2",
+  "revision": 3,
+  "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
+  "branch": "feature/multimedia-gallery-v2",
+  "current_phase": "P00",
+  "current_task": "P00-T01",
+  "status": "VERIFYING",
+  "progress_percent": 0,
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T03:19:16.727Z",
+  "updated_at": "2026-09-22T03:22:36.546Z",
+  "base_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T03:19:16.727Z",
+    "heartbeat_at": "2026-09-22T03:22:36.546Z",
+    "expires_at": "2026-09-22T03:52:36.546Z"
+  },
+  "expected_files": [
+    "AGENTS.md",
+    "project/checkpoint.json",
+    "project/task-manifest.json",
+    "scripts/project-status.mjs"
+  ],
+  "last_verified": {
+    "commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
+    "commands": [
+      "npm test",
+      "npm run check",
+      "npm run build",
+      "npm run project:validate",
+      "git diff --check"
+    ],
+    "result": "PASS",
+    "evidence": [
+      "project/evidence/P00-T01/verification.json"
+    ]
+  },
+  "next_step": "提交 P00-T01（含並行寫入鎖與 9 項測試），取得 delivery commit",
+  "blockers": [],
+  "task_states": {
+    "P00-T01": "VERIFYING",
+    "P01-T01": "PENDING",
+    "P02-T01": "PENDING",
+    "P03-T01": "PENDING",
+    "P04-T01": "PENDING",
+    "P05-T01": "PENDING",
+    "P06-T01": "PENDING",
+    "P07-T01": "PENDING",
+    "P08-T01": "PENDING",
+    "P09-T01": "PENDING",
+    "P10-T01": "PENDING",
+    "P11-T01": "PENDING"
+  }
+}

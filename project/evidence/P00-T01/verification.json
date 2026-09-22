@@ -1,0 +1,46 @@
+{
+  "schema": "class3d-task-evidence-v1",
+  "task": "P00-T01",
+  "verified_at": "2026-09-22T11:19:42+08:00",
+  "base_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
+  "result": "PASS",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "9 tests passed, including interrupted-state recovery, stale lease detection, abandoned temporary file recovery and serialized concurrent writers"
+    },
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "summary": "TypeScript check passed"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "Vite production build passed; existing bundle-size warning remains non-blocking"
+    },
+    {
+      "command": "npm run project:validate",
+      "exit_code": 0,
+      "summary": "Checkpoint revision, journal revision, task documents, branch and baseline commit are consistent"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "summary": "No whitespace errors"
+    },
+    {
+      "command": "node --check scripts/*.mjs scripts/lib/*.mjs",
+      "exit_code": 0,
+      "summary": "All project-control scripts passed syntax checks"
+    }
+  ],
+  "acceptance": {
+    "state_validation": true,
+    "atomic_checkpoint_write": true,
+    "concurrent_writer_serialization": true,
+    "interrupted_task_recovery": true,
+    "handoff_regeneration": true
+  }
+}

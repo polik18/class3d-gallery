@@ -1,0 +1,128 @@
+{
+  "schema": "class3d-task-manifest-v1",
+  "project": "class3d-gallery-v2",
+  "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
+  "branch": "feature/multimedia-gallery-v2",
+  "tasks": [
+    {
+      "id": "P00-T01",
+      "phase": "P00",
+      "title": "建立可恢復的 CLI 施工控制層",
+      "weight": 8,
+      "depends_on": [],
+      "task_doc": "project/tasks/P00-T01.md",
+      "outputs": ["AGENTS.md", "project/checkpoint.json", "project/task-manifest.json", "scripts/project-status.mjs"],
+      "acceptance": ["狀態檔可驗證", "checkpoint 原子寫入", "模擬中斷後可讀回下一步", "handoff 可由 checkpoint 重建"]
+    },
+    {
+      "id": "P01-T01",
+      "phase": "P01",
+      "title": "建立多媒體作品與展覽資料模型",
+      "weight": 8,
+      "depends_on": ["P00-T01"],
+      "task_doc": "project/tasks/P01-T01.md",
+      "outputs": ["src/assets/types.ts", "src/exhibition/types.ts"],
+      "acceptance": ["作品與展覽 schema 完整", "序列化與還原測試通過"]
+    },
+    {
+      "id": "P02-T01",
+      "phase": "P02",
+      "title": "實作多檔與資料夾匯入佇列",
+      "weight": 10,
+      "depends_on": ["P01-T01"],
+      "task_doc": "project/tasks/P02-T01.md",
+      "outputs": ["src/assets/ingest.ts", "src/assets/importQueue.ts"],
+      "acceptance": ["可一次拖入至少 30 件混合檔案", "單一失敗不阻斷其他檔案"]
+    },
+    {
+      "id": "P03-T01",
+      "phase": "P03",
+      "title": "自動分類並解析檔名、座號與 GLTF 相依檔",
+      "weight": 8,
+      "depends_on": ["P02-T01"],
+      "task_doc": "project/tasks/P03-T01.md",
+      "outputs": ["src/assets/classifier.ts", "src/assets/fileNameParser.ts", "src/assets/dependencyResolver.ts"],
+      "acceptance": ["常用媒體格式分類正確", "結構化檔名解析正確", "GLTF 相依檔不成為獨立作品"]
+    },
+    {
+      "id": "P04-T01",
+      "phase": "P04",
+      "title": "建立 IndexedDB 本機作品庫",
+      "weight": 10,
+      "depends_on": ["P03-T01"],
+      "task_doc": "project/tasks/P04-T01.md",
+      "outputs": ["src/storage/indexedDb.ts", "src/storage/export.ts"],
+      "acceptance": ["重新整理後可恢復已保存作品", "容量不足時安全拒絕", "可匯出與清除"]
+    },
+    {
+      "id": "P05-T01",
+      "phase": "P05",
+      "title": "建立多媒體 Renderer 系統",
+      "weight": 16,
+      "depends_on": ["P04-T01"],
+      "task_doc": "project/tasks/P05-T01.md",
+      "outputs": ["src/renderers/", "src/exhibition/modelViewer.ts"],
+      "acceptance": ["圖片、影片、音訊、PDF、3D 可展示", "離開焦點後停止並釋放資源"]
+    },
+    {
+      "id": "P06-T01",
+      "phase": "P06",
+      "title": "建立展覽模式與排序",
+      "weight": 12,
+      "depends_on": ["P05-T01"],
+      "task_doc": "project/tasks/P06-T01.md",
+      "outputs": ["src/gallery/galleryController.ts", "src/gallery/sort.ts"],
+      "acceptance": ["全展、分類展、自選展、獨展可切換", "座號、分類、匯入時間、人氣排序正確"]
+    },
+    {
+      "id": "P07-T01",
+      "phase": "P07",
+      "title": "建立展覽總標題與教師設定",
+      "weight": 6,
+      "depends_on": ["P06-T01"],
+      "task_doc": "project/tasks/P07-T01.md",
+      "outputs": ["src/exhibition/settings.ts", "src/exhibition/settingsView.ts"],
+      "acceptance": ["標題、副標題與介紹可編輯保存", "所有展示模式顯示展覽標題"]
+    },
+    {
+      "id": "P08-T01",
+      "phase": "P08",
+      "title": "建立本機按讚、留言、審核與人氣",
+      "weight": 8,
+      "depends_on": ["P07-T01"],
+      "task_doc": "project/tasks/P08-T01.md",
+      "outputs": ["src/engagement/", "src/storage/engagement.ts"],
+      "acceptance": ["按讚與留言只存在本機", "留言可審核", "自動展示不增加人氣"]
+    },
+    {
+      "id": "P09-T01",
+      "phase": "P09",
+      "title": "建立閒置自動展示與動畫",
+      "weight": 6,
+      "depends_on": ["P08-T01"],
+      "task_doc": "project/tasks/P09-T01.md",
+      "outputs": ["src/showcase/idleController.ts", "src/showcase/transitions.ts"],
+      "acceptance": ["30 秒閒置進入展示", "標題、輪播、縮圖牆、熱門展循環", "人工操作立即退出"]
+    },
+    {
+      "id": "P10-T01",
+      "phase": "P10",
+      "title": "完成效能、無障礙與安全驗收",
+      "weight": 5,
+      "depends_on": ["P09-T01"],
+      "task_doc": "project/tasks/P10-T01.md",
+      "outputs": ["tests/", "project/evidence/P10-T01/"],
+      "acceptance": ["200 件縮圖可用", "減少動態效果生效", "不產生作品上傳請求"]
+    },
+    {
+      "id": "P11-T01",
+      "phase": "P11",
+      "title": "完整回歸、文件、發布與線上驗收",
+      "weight": 3,
+      "depends_on": ["P10-T01"],
+      "task_doc": "project/tasks/P11-T01.md",
+      "outputs": ["README.md", "project/evidence/P11-T01/"],
+      "acceptance": ["完整測試通過", "GitHub Pages 發布成功", "線上混合媒體煙霧測試通過"]
+    }
+  ]
+}

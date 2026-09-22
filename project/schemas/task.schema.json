@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Class3D task manifest",
+  "type": "object",
+  "required": ["schema", "project", "baseline_commit", "branch", "tasks"],
+  "properties": {
+    "schema": { "const": "class3d-task-manifest-v1" },
+    "project": { "const": "class3d-gallery-v2" },
+    "baseline_commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "branch": { "type": "string", "minLength": 1 },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "phase", "title", "weight", "depends_on", "task_doc", "outputs", "acceptance"]
+      }
+    }
+  }
+}

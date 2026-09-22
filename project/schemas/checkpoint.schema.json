@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Class3D project checkpoint",
+  "type": "object",
+  "required": ["schema", "project", "revision", "baseline_commit", "branch", "current_phase", "current_task", "status", "progress_percent", "updated_at", "last_verified", "next_step", "blockers", "task_states"],
+  "properties": {
+    "schema": { "const": "class3d-checkpoint-v1" },
+    "project": { "const": "class3d-gallery-v2" },
+    "revision": { "type": "integer", "minimum": 0 },
+    "baseline_commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "progress_percent": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "status": { "enum": ["PENDING", "IN_PROGRESS", "VERIFYING", "ACCEPTED", "NEEDS_FIX", "BLOCKED", "RECOVERY_REQUIRED"] },
+    "task_states": { "type": "object", "additionalProperties": { "enum": ["PENDING", "IN_PROGRESS", "VERIFYING", "ACCEPTED", "NEEDS_FIX", "BLOCKED", "RECOVERY_REQUIRED"] } }
+  }
+}
