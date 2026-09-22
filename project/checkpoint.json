@@ -1,42 +1,48 @@
 {
   "schema": "class3d-checkpoint-v1",
   "project": "class3d-gallery-v2",
-  "revision": 13,
+  "revision": 15,
   "baseline_commit": "d64143c0ae7a68b4d272bb2224b0cbd395cfe097",
   "branch": "feature/multimedia-gallery-v2",
   "current_phase": "P04",
   "current_task": "P04-T01",
-  "status": "PENDING",
+  "status": "IN_PROGRESS",
   "progress_percent": 34,
-  "owner": null,
-  "started_at": null,
-  "updated_at": "2026-09-22T04:13:24.584Z",
-  "base_commit": "7204e6076e82179fccc2e8c2faf2005b0ed3a16a",
-  "delivery_commit": "f3961d69bb4e5da1d3a9955afbd80a9a54fbd75b",
-  "lease": null,
-  "expected_files": [],
+  "owner": "huangjianzhe",
+  "started_at": "2026-09-22T04:18:04.185Z",
+  "updated_at": "2026-09-22T04:20:29.595Z",
+  "base_commit": "37a3525e101b4a30e88509950d2608e2a81be7fc",
+  "delivery_commit": null,
+  "lease": {
+    "owner": "huangjianzhe",
+    "acquired_at": "2026-09-22T04:18:04.185Z",
+    "heartbeat_at": "2026-09-22T04:20:29.594Z",
+    "expires_at": "2026-09-22T04:50:29.594Z"
+  },
+  "expected_files": [
+    "src/storage/indexedDb.ts",
+    "src/storage/export.ts",
+    "tests/storage.test.ts"
+  ],
   "last_verified": {
-    "commit": "7204e6076e82179fccc2e8c2faf2005b0ed3a16a",
+    "commit": "37a3525e101b4a30e88509950d2608e2a81be7fc",
     "commands": [
-      "npm test",
-      "npm run check",
-      "npm run build",
-      "npm run project:validate",
-      "git diff --check"
+      "npm run test:storage",
+      "npm run check"
     ],
-    "result": "PASS",
+    "result": "PARTIAL_PASS",
     "evidence": [
       "project/evidence/P03-T01/verification.json"
     ]
   },
-  "next_step": "執行 npm run task:start -- P04-T01",
+  "next_step": "執行 P04 全套 npm test、build、瀏覽器 IndexedDB smoke test，建立 verification evidence 後驗收",
   "blockers": [],
   "task_states": {
     "P00-T01": "ACCEPTED",
     "P01-T01": "ACCEPTED",
     "P02-T01": "ACCEPTED",
     "P03-T01": "ACCEPTED",
-    "P04-T01": "PENDING",
+    "P04-T01": "IN_PROGRESS",
     "P05-T01": "PENDING",
     "P06-T01": "PENDING",
     "P07-T01": "PENDING",
